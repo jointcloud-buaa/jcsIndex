@@ -74,7 +74,9 @@ public class BoundaryValue implements Comparable, Serializable
 	
 	public static BoundaryValue average(BoundaryValue value1, BoundaryValue value2)
 	{
-		long midLongValue = (long) ((value1.getLongValue() + value2.getLongValue()) / 2);
+		// TODO: 有溢出风险，需要修改
+		// long midLongValue = (long) ((value1.getLongValue() + value2.getLongValue()) / 2);
+		long midLongValue = (value1.getLongValue() & value2.getLongValue()) + ((value1.getLongValue() ^ value2.getLongValue()) >> 1);
 		
 		String str1 = value1.getStringValue();
 		String str2 = value2.getStringValue();
@@ -237,6 +239,9 @@ public class BoundaryValue implements Comparable, Serializable
 				return (Long.valueOf(this.longValue)).compareTo(Long.valueOf(compareValue.longValue));
 			else
 				return (this.stringValue).compareTo(compareValue.stringValue);			
+		} else if (compareObject instanceof JcsTuple) {
+			// TODO: 增加与JcsTuple的比较
+			return ((Long ) this.longValue).compareTo(((JcsTuple ) compareObject).getLeftBound());
 		}
 		throw new ClassCastException("Object is invalid");		
 	}

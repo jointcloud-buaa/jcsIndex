@@ -69,8 +69,6 @@ public class SPInsertListener extends ActionAdapter
 			if ((insertedData.compareTo(minValue) >= 0) && (insertedData.compareTo(maxValue) < 0))
 			{
 				treeNode.getContent().insertData(insertedData, 0);
-				// TODO: 增加一个插入选项，插入data1
-				treeNode.getContent().insertData1(insertedData, 0);
 				/*doing load balancing*/
 				
 				if ((treeNode.getContent().isOverloaded()) &&

@@ -34,10 +34,10 @@ public class SPLeaveUrgentBody extends Body implements Serializable
 
 	/**
 	 * Construct the message body with specified parameters.
-	 * 
+	 *
 	 * @param physicalSender physical address of the sender
 	 * @param logicalSender logical address of the sender
-	 * @param treeNode 
+	 * @param treeNode
 	 * @param logicalDestination logical address of the receiver
 	 */
 	public SPLeaveUrgentBody(PhysicalInfo physicalSender, LogicalInfo logicalSender,

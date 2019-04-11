@@ -63,7 +63,7 @@ public class SPSearchExactListener extends ActionAdapter
 			}
 
 			IndexValue searchedData = body.getData();
-			Vector storedData = treeNode.getContent().getData(searchedData.getTimeIndex());
+			Vector storedData = treeNode.getContent().getData();
 			// TODO: 增加一个判断，判断storeData是否为null
 			if (storedData == null) {
 				storedData = new Vector<>();

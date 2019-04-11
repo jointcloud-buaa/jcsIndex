@@ -73,7 +73,6 @@ public class IndexValue implements Comparable, Serializable
 	private static final long serialVersionUID = 2193787517910194014L;
 	
 	private int type;
-	private int timeIndex;
 	// value = key
 	private Object value;	
 	public IndexInfo indexInfo = null;
@@ -94,18 +93,6 @@ public class IndexValue implements Comparable, Serializable
 	{
 		parse(type, newValue);
 		this.indexInfo = indexInfo;
-	}
-
-	// TODO：临时增加一个构造函数
-	public IndexValue(int type, int timeIndex, String newValue, IndexInfo indexInfo) {
-		parse(type, newValue);
-		this.timeIndex = timeIndex;
-		this.indexInfo = indexInfo;
-	}
-
-	// TODO: 增加一个get函数
-	public int getTimeIndex() {
-		return timeIndex;
 	}
 	
 	/**

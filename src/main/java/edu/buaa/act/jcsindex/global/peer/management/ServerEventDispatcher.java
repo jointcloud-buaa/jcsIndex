@@ -123,6 +123,12 @@ public class ServerEventDispatcher extends AbstractEventDispatcher
 
 		this.addActionListener(new SPSearchExactListener(instance));
 		this.addActionListener(new SPSearchExactResultListener(instance));
+
+		// TODO: 自我添加的Listener
+		this.addActionListener(new SPPublishListener(instance));
+		this.addActionListener(new SPPublishParentListener(instance));
+		this.addActionListener(new SPUpdateTagListener(instance));
+
 		/*
 		 * SPSearchExactListener, SPSearchExactBundleListener,
 		 * SPSearchExactResultListener, SPSearchRangeListener,

@@ -9,6 +9,7 @@ package edu.buaa.act.jcsindex.global.peer.info;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -50,15 +51,20 @@ public class ContentInfo implements Serializable
 	private BoundaryValue minValue;
 	private BoundaryValue maxValue;
 
-	// TODO: subtree range L and R, 暂时添加
+	// TODO: 添加subtree range L and R(测试节点加入和退出，数据是正常的)
 	private BoundaryValue subtreeRangeL;
 	private BoundaryValue subtreeRangeR;
 	
 	private int order;
 	private Vector<IndexValue> data;
 
-	// TODO: 先增加一个Map用来存数据
-	private Map<Integer, Vector<IndexValue>> data1 = new HashMap<>();
+	// TODO: 增加一个Map用来存jcsindex的数据，后续可以在此基础上改进
+	private Map<Integer, Vector<JcsTuple>> jcsData = new HashMap<>();
+
+	// TODO：增加一个属性表示是否有必要向上搜索
+	// 按照我的理解，只需要记录从该节点走的数据的rightBound即可(不一定很有效率)
+	private Map<Integer, Long> tagLeftSets = new HashMap<>();
+	private Map<Integer, Long> tagRightSets = new HashMap<>();
 
 	/**
 	 * Contruct the set of the index keys at each super node.
@@ -82,9 +88,7 @@ public class ContentInfo implements Serializable
 		this.subtreeRangeR = new BoundaryValue(maxValue);
 	}
 
-	// TODO: 增加新变量后添加构造函数及获取属性函数
-
-	// 子树范围一般在节点加入时就已经固定了，因此可以在构造函数中直接生成
+	// TODO：子树范围一般在节点加入时就已经固定了，因此可以在构造函数中直接生成
 	public ContentInfo(BoundaryValue minValue, BoundaryValue maxValue, int order, Vector<IndexValue> data, BoundaryValue srl, BoundaryValue srr) {
 		this(minValue, maxValue, order, data);
 		this.subtreeRangeL = srl;
@@ -127,7 +131,27 @@ public class ContentInfo implements Serializable
 	    	System.out.println("Incorrect serialize data at ContentInfo:" + serializeData);
 	    }
 	}
-	
+
+	// TODO: 添加tagValue的set和get
+	public long getLeftTagSets(int timeIndex) {
+		// TODO: 设置默认值为0L
+		return tagLeftSets.getOrDefault(timeIndex, 0L);
+	}
+
+	public long getRightTagSets(int timeIndex) {
+		return tagRightSets.getOrDefault(timeIndex, 0L);
+	}
+
+	public void setTagLeftSets(JcsTuple tuple) {
+		long ans = Math.max(tagLeftSets.getOrDefault(tuple.getTimeIndex(), 0L), tuple.getRightBound());
+		tagLeftSets.put(tuple.getTimeIndex(), ans);
+	}
+
+	public void setTagRightSets(JcsTuple tuple) {
+		long ans = Math.max(tagRightSets.getOrDefault(tuple.getTimeIndex(), 0L), tuple.getLeftBound());
+		tagRightSets.put(tuple.getTimeIndex(), ans);
+	}
+
 	/**
 	 * Set the minimum index value.
 	 * 
@@ -198,9 +222,13 @@ public class ContentInfo implements Serializable
 	    return this.data;
 	}
 
-	// TODO: 获取相应的数据
-	public Vector<IndexValue> getData(int timeIndex) {
-		return this.data1.get(timeIndex);
+	/**
+	 * Get the set of jcs index value
+	 * @param timeIndex time index
+	 * @return
+	 */
+	public Vector<JcsTuple> getJcsData(int timeIndex) {
+		return this.jcsData.get(timeIndex);
 	}
 
 	public void setData(Vector<IndexValue> data)
@@ -226,7 +254,7 @@ public class ContentInfo implements Serializable
 	 */
 	public void insertData(IndexValue dataValue, int mode)
 	{
-    	IndexValue temptValue, sentinelValue;	    	
+    	IndexValue temptValue, sentinelValue;
 
     	switch (mode)
 	    {
@@ -251,7 +279,7 @@ public class ContentInfo implements Serializable
 	    	}
 	    	this.data.add(sentinelValue);
 
-	    	// TODO: 暂时没发现这么做的必要
+	    	// TODO: 暂时不理解为什么要这么做
 	    	/* change min key value */
 //	    	if (dataValue.getType() == IndexValue.NUMERIC_TYPE)
 //	    		this.minValue.setLongValue(Long.parseLong(dataValue.getKey()));
@@ -273,65 +301,39 @@ public class ContentInfo implements Serializable
 	    }
 	}
 
+	public boolean satisfyRange(JcsTuple tupleValue) {
+		//　TODO: just for test
+		System.out.println("L: " + subtreeRangeL.getLongValue() + " R: " + subtreeRangeR.getLongValue() + " tuple: " + tupleValue.toString());
+		return subtreeRangeL.getLongValue() <= tupleValue.getLeftBound() &&  tupleValue.getRightBound() <= subtreeRangeR.getLongValue();
+	}
+
 	// TODO：插入数据，插入一个Map<Integer, List<>>里面
-	public void insertData1(IndexValue dataValue, int mode)
+	public void insertJcsTuple(JcsTuple tupleValue)
 	{
-		// TODO: just for test
-		System.out.println("执行了insertData1");
-		IndexValue temptValue, sentinelValue;
-
-		switch (mode)
+		// TODO: 输出语句，便于调试
+		System.out.println("执行了insertJcsTuple");
+		JcsTuple temptValue, sentinelValue;
+		sentinelValue = tupleValue;
+		Vector arr = this.jcsData.get(sentinelValue.getTimeIndex());
+		if (arr != null && arr.size() != 0)
 		{
-			case INSERT_NORMALLY:
-				/* FALL THROUGH */
-
-			case INSERT_AS_MIN_KEY:
-				sentinelValue = dataValue;
-				Vector arr = this.data1.get(sentinelValue.getTimeIndex());
-				if (arr != null && arr.size() != 0)
+			int i = 0;
+			while (i < arr.size())
+			{
+				// 后续考虑是否把Vector改成LinkedList，这里执行的操作实际上是执行一个有序的插入，使用数组影响效率
+				if (((JcsTuple) arr.get(i)).compareTo(sentinelValue) > 0)
 				{
-					int i = 0;
-					while (i < arr.size())
-					{
-						if (((IndexValue) arr.get(i)).compareTo(sentinelValue) > 0)
-						{
-							temptValue = (IndexValue) arr.get(i);
-							arr.setElementAt(sentinelValue, i);
-							sentinelValue = temptValue;
-						}
-						i++;
-					}
-				} else if (arr == null) {
-					data1.put(sentinelValue.getTimeIndex(), new Vector<>());
-					arr = data1.get(sentinelValue.getTimeIndex());
+					temptValue = (JcsTuple) arr.get(i);
+					arr.setElementAt(sentinelValue, i);
+					sentinelValue = temptValue;
 				}
-				arr.add(sentinelValue);
-				System.out.println("插入数据后，storage大小为 " + arr.size());
-
-
-				// TODO: 暂时没发现这么做的必要
-				/* change min key value */
-//				if (dataValue.getType() == IndexValue.NUMERIC_TYPE)
-//					this.minValue.setLongValue(Long.parseLong(dataValue.getKey()));
-//				else if (dataValue.getType() == IndexValue.STRING_TYPE)
-//					this.minValue.setStringValue(dataValue.getKey());
-
-				break;
-
-			case INSERT_AS_MAX_KEY:
-				if (data1.get(dataValue.getTimeIndex()) == null) {
-					data1.put(dataValue.getTimeIndex(), new Vector<>());
-				}
-				this.data1.get(dataValue.getTimeIndex()).add(dataValue);
-
-				/* change max key value */
-				if (dataValue.getType() == IndexValue.NUMERIC_TYPE)
-					this.maxValue.setLongValue(Long.parseLong(dataValue.getKey()));
-				else if (dataValue.getType() == IndexValue.STRING_TYPE)
-					this.maxValue.setStringValue(dataValue.getKey());
-
-				break;
+				i++;
+			}
+		} else if (arr == null) {
+			jcsData.put(sentinelValue.getTimeIndex(), new Vector<>());
+			arr = jcsData.get(sentinelValue.getTimeIndex());
 		}
+		arr.add(sentinelValue);
 	}
 
 
@@ -447,6 +449,17 @@ public class ContentInfo implements Serializable
 			}
 		}
 		return sb.toString();
+	}
+
+	public String formatTupleString() {
+		String outMsg = "";
+		for (Map.Entry<Integer, Vector<JcsTuple>> entry : jcsData.entrySet()) {
+			outMsg += "TimeIndex: " + entry.getKey() + "\n";
+			for (JcsTuple tuple : entry.getValue()) {
+				outMsg += tuple.toString() + "\n";
+			}
+		}
+		return outMsg;
 	}
 
 	/**

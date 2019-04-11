@@ -542,6 +542,14 @@ public enum MsgType
 	 */
 	SP_UPDATE								(superpeer_to_superpeer.key + 58),
 	SP_UPDATE_BUNDLE						(superpeer_to_superpeer.key + 59),
+
+	/**
+	 * TODO: 添加新的消息类型
+	 * When publish a jcsIndex
+	 */
+	SP_PUBLISH								(superpeer_to_superpeer.key + 60),
+	SP_PUBLISH_PARENT						(superpeer_to_superpeer.key + 61),
+	SP_UPDATE_TAG						(superpeer_to_superpeer.key + 62),
 	
 	/* define CA MESSAGE BELLOW */
 	cert_authority							(common.key + 600),
@@ -1182,6 +1190,12 @@ public enum MsgType
 		else if (MsgType.SP_UPDATE_BUNDLE.getValue() == msgType)
 		{
 			result = "UPDATE INDEX OF A BUNDLE OF TERMS";
+		} else if (MsgType.SP_PUBLISH.getValue() == msgType) {
+			result = "PUBLISH JCSTUPLE";
+		} else if (MsgType.SP_PUBLISH_PARENT.getValue() == msgType) {
+			result = "PUBLISH PARENT JCSTUPLE";
+		} else if (MsgType.SP_UPDATE_TAG.getValue() == msgType) {
+			result = "UPDATE NODE TAG";
 		}
 		// -------------- FOR CERTICATE AUTHORITY --------------
 		else if (MsgType.CA_GET_CERT.getValue() == msgType)
