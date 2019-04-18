@@ -8,10 +8,7 @@
 package edu.buaa.act.jcsindex.global.peer.info;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Implement the index key set of each node in the BATON tree.
@@ -150,6 +147,22 @@ public class ContentInfo implements Serializable
 	public void setTagRightSets(JcsTuple tuple) {
 		long ans = Math.max(tagRightSets.getOrDefault(tuple.getTimeIndex(), 0L), tuple.getLeftBound());
 		tagRightSets.put(tuple.getTimeIndex(), ans);
+	}
+
+	public boolean isLeftChildOverlap(long leftBound, long rightBound) {
+		if (Math.max(leftBound, subtreeRangeL.getLongValue()) < Math.min(rightBound, minValue.getLongValue())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isRightChildOverlap(long leftBound, long rightBound) {
+		if (Math.max(leftBound, maxValue.getLongValue()) < Math.min(rightBound, subtreeRangeR.getLongValue())) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -334,6 +347,21 @@ public class ContentInfo implements Serializable
 			arr = jcsData.get(sentinelValue.getTimeIndex());
 		}
 		arr.add(sentinelValue);
+	}
+
+	public Set<String> localSearch(int timeIndex, long leftBound, long rightBound) {
+		Set<String> ans = new HashSet<>();
+		Vector<JcsTuple> selected = jcsData.getOrDefault(timeIndex, null);
+		if (selected == null) {
+			return ans;
+		}
+		for (int i = 0; i < selected.size(); i++) {
+			JcsTuple tuple = selected.get(i);
+			if (Math.max(leftBound, tuple.getLeftBound()) < Math.min(rightBound, tuple.getRightBound())) {
+				ans.add(tuple.getDest());
+			}
+		}
+		return ans;
 	}
 
 

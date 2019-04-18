@@ -4,24 +4,28 @@ import edu.buaa.act.jcsindex.global.AbstractInstance;
 import edu.buaa.act.jcsindex.global.peer.ServerPeer;
 import edu.buaa.act.jcsindex.global.peer.info.BoundaryValue;
 import edu.buaa.act.jcsindex.global.peer.info.JcsTuple;
-import edu.buaa.act.jcsindex.global.peer.info.RoutingItemInfo;
 import edu.buaa.act.jcsindex.global.peer.info.TreeNode;
 import edu.buaa.act.jcsindex.global.peer.management.EventHandleException;
-import edu.buaa.act.jcsindex.global.proto.BroadcastClient;
 import edu.buaa.act.jcsindex.global.protocol.Head;
 import edu.buaa.act.jcsindex.global.protocol.Message;
 import edu.buaa.act.jcsindex.global.protocol.MsgType;
-import edu.buaa.act.jcsindex.global.protocol.body.*;
+import edu.buaa.act.jcsindex.global.protocol.body.SPParallelSearchBody;
+import edu.buaa.act.jcsindex.global.protocol.body.SPParallelSearchResultBody;
+import edu.buaa.act.jcsindex.global.protocol.body.SPSearchExactResultBody;
+import edu.buaa.act.jcsindex.global.protocol.body.SPSearchParentBody;
 
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Created by shimin at 4/11/2019 10:16 PM
+ * Created by shimin at 4/18/2019 10:22 PM
  **/
-public class SPFindParentListener extends ActionAdapter {
+public class SPSearchParentListener extends ActionAdapter {
 
-    public SPFindParentListener(AbstractInstance instance)
+    public SPSearchParentListener(AbstractInstance instance)
     {
         super(instance);
     }
@@ -40,7 +44,7 @@ public class SPFindParentListener extends ActionAdapter {
             ServerPeer serverpeer = (ServerPeer) instance.peer();
 
             /* get the message body */
-            SPParallelSearchBody body = (SPParallelSearchBody) msg.getBody();
+            SPSearchParentBody body = (SPSearchParentBody) msg.getBody();
 
             TreeNode treeNode = serverpeer.getTreeNode(body.getLogicalDestination());
             if (treeNode == null)
@@ -50,33 +54,28 @@ public class SPFindParentListener extends ActionAdapter {
             }
 
             JcsTuple searchedData = body.getTuple();
+            List<String> dests = body.getDests();
             BoundaryValue minValue = treeNode.getContent().getMinValue();
             BoundaryValue maxValue = treeNode.getContent().getMaxValue();
 
-            if (treeNode.getContent().satisfyRange(searchedData)) {
-                // 找到了最合适的节点
-                BroadcastClient client = new BroadcastClient(serverpeer.getPhysicalInfo().getIP());
-                List<String> ans = client.broadcastSearch(searchedData.getTimeIndex(), searchedData.getLeftBound(), searchedData.getRightBound());
-                if (treeNode.getParentNode() != null) {
-                    body.setLogicalDestination(treeNode.getParentNode().getLogicalInfo());
-                    thead.setMsgType(MsgType.SP_SEARCH_PARENT.getValue());
-                    SPSearchParentBody tbody = new SPSearchParentBody(body);
-                    tbody.setDests(ans);
-                    result = new Message(thead, tbody);
-                    serverpeer.sendMessage(treeNode.getParentNode().getPhysicalInfo(), result);
-                } else {
-                    // 从这里直接返回结果
-                    thead.setMsgType(MsgType.SP_PARALLEL_SEARCH_RESULT.getValue());
-                    SPParallelSearchResultBody tbody = new SPParallelSearchResultBody(body.getPhysicalSender(), body.getLogicalSender(), ans, null);
-                    result = new Message(thead, tbody);
-                    serverpeer.sendMessage(body.getPhysicalRequester(), result);
-                }
-            } else {
-                // 没有找到，继续向上，当然最后肯定会找到的
+            // TODO: 没有使用tagSet的作用，直接返回，后续考虑加上这些功能
+
+            Set<String> choosen = new HashSet<>(dests);
+            choosen.addAll(treeNode.getContent().localSearch(searchedData.getTimeIndex(), searchedData.getLeftBound(), searchedData.getRightBound()));
+
+            List<String> fdests = new ArrayList<>(choosen);
+            if (treeNode.getParentNode() != null) {
                 body.setLogicalDestination(treeNode.getParentNode().getLogicalInfo());
-                thead.setMsgType(MsgType.SP_FIND_PARENT.getValue());
+                thead.setMsgType(MsgType.SP_SEARCH_PARENT.getValue());
+                body.setDests(fdests);
                 result = new Message(thead, body);
                 serverpeer.sendMessage(treeNode.getParentNode().getPhysicalInfo(), result);
+            } else {
+                // 从这里直接返回结果
+                thead.setMsgType(MsgType.SP_PARALLEL_SEARCH_RESULT.getValue());
+                SPParallelSearchResultBody tbody = new SPParallelSearchResultBody(body.getPhysicalSender(), body.getLogicalSender(), fdests, null);
+                result = new Message(thead, tbody);
+                serverpeer.sendMessage(body.getPhysicalRequester(), result);
             }
         }
         catch (Exception e)
@@ -88,9 +87,9 @@ public class SPFindParentListener extends ActionAdapter {
 
     public boolean isConsumed(Message msg) throws EventHandleException
     {
-        if (msg.getHead().getMsgType() == MsgType.SP_FIND_PARENT.getValue()) {
+        if (msg.getHead().getMsgType() == MsgType.SP_SEARCH_PARENT.getValue()) {
             // TODO: JUST FOR TEST
-            System.out.println("***SP_FIND_PARENT");
+            System.out.println("***SP_SEARCH_PARENT");
             return true;
         }
         return false;

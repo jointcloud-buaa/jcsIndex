@@ -5,13 +5,14 @@ import edu.buaa.act.jcsindex.global.peer.info.LogicalInfo;
 import edu.buaa.act.jcsindex.global.peer.info.PhysicalInfo;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * Created by shimin at 4/11/2019 10:18 PM
+ * Created by shmin at 4/11/2019 10:18 PM
  **/
-public class SPFindParentBody extends Body implements Serializable {
+public class SPSearchParentBody extends Body implements Serializable {
     // private members
-    private static final long serialVersionUID = 8463152687562874898L;
+    private static final long serialVersionUID = 8463152637562874898L;
 
     private PhysicalInfo physicalSender;
     private LogicalInfo logicalSender;
@@ -19,6 +20,7 @@ public class SPFindParentBody extends Body implements Serializable {
     private LogicalInfo logicalRequester;
     // TODO: 只能对应一个时段的Search
     private JcsTuple tuple;
+    private List<String> dests;
     private LogicalInfo  logicalDestination;
 
     /**
@@ -29,24 +31,33 @@ public class SPFindParentBody extends Body implements Serializable {
      * @param tuple tuple item wanted to insert
      * @param logicalDestination logical address of the receiver
      */
-    public SPFindParentBody(PhysicalInfo physicalSender, LogicalInfo logicalSender, PhysicalInfo physicalRequester, LogicalInfo logicalRequester,
-                                JcsTuple tuple, LogicalInfo logicalDestination)
+    public SPSearchParentBody(PhysicalInfo physicalSender, LogicalInfo logicalSender, PhysicalInfo physicalRequester, LogicalInfo logicalRequester,
+                            JcsTuple tuple, List<String> dests, LogicalInfo logicalDestination)
     {
         this.physicalSender = physicalSender;
         this.logicalSender = logicalSender;
         this.physicalRequester = physicalRequester;
         this.logicalRequester = logicalRequester;
         this.tuple = tuple;
+        this.dests = dests;
         this.logicalDestination = logicalDestination;
     }
 
-    public SPFindParentBody(SPParallelSearchBody body) {
+    public SPSearchParentBody(SPParallelSearchBody body) {
         this.physicalSender = body.getPhysicalSender();
         this.logicalSender = body.getLogicalSender();
         this.physicalRequester = body.getPhysicalRequester();
         this.logicalRequester = body.getLogicalRequester();
         this.tuple = body.getTuple();
         this.logicalDestination = body.getLogicalDestination();
+    }
+
+    public List<String> getDests() {
+        return dests;
+    }
+
+    public void setDests(List<String> dests) {
+        this.dests = dests;
     }
 
     public PhysicalInfo getPhysicalRequester() {

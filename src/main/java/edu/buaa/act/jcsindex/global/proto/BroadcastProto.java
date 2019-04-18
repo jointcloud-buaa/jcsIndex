@@ -24,14 +24,14 @@ public final class BroadcastProto {
     int getTimeIndex();
 
     /**
-     * <code>int32 leftBound = 2;</code>
+     * <code>int64 leftBound = 2;</code>
      */
-    int getLeftBound();
+    long getLeftBound();
 
     /**
-     * <code>int32 rightBound = 3;</code>
+     * <code>int64 rightBound = 3;</code>
      */
-    int getRightBound();
+    long getRightBound();
   }
   /**
    * Protobuf type {@code proto.BroadRequest}
@@ -79,12 +79,12 @@ public final class BroadcastProto {
             }
             case 16: {
 
-              leftBound_ = input.readInt32();
+              leftBound_ = input.readInt64();
               break;
             }
             case 24: {
 
-              rightBound_ = input.readInt32();
+              rightBound_ = input.readInt64();
               break;
             }
             default: {
@@ -129,20 +129,20 @@ public final class BroadcastProto {
     }
 
     public static final int LEFTBOUND_FIELD_NUMBER = 2;
-    private int leftBound_;
+    private long leftBound_;
     /**
-     * <code>int32 leftBound = 2;</code>
+     * <code>int64 leftBound = 2;</code>
      */
-    public int getLeftBound() {
+    public long getLeftBound() {
       return leftBound_;
     }
 
     public static final int RIGHTBOUND_FIELD_NUMBER = 3;
-    private int rightBound_;
+    private long rightBound_;
     /**
-     * <code>int32 rightBound = 3;</code>
+     * <code>int64 rightBound = 3;</code>
      */
-    public int getRightBound() {
+    public long getRightBound() {
       return rightBound_;
     }
 
@@ -163,11 +163,11 @@ public final class BroadcastProto {
       if (timeIndex_ != 0) {
         output.writeInt32(1, timeIndex_);
       }
-      if (leftBound_ != 0) {
-        output.writeInt32(2, leftBound_);
+      if (leftBound_ != 0L) {
+        output.writeInt64(2, leftBound_);
       }
-      if (rightBound_ != 0) {
-        output.writeInt32(3, rightBound_);
+      if (rightBound_ != 0L) {
+        output.writeInt64(3, rightBound_);
       }
       unknownFields.writeTo(output);
     }
@@ -182,13 +182,13 @@ public final class BroadcastProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, timeIndex_);
       }
-      if (leftBound_ != 0) {
+      if (leftBound_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, leftBound_);
+          .computeInt64Size(2, leftBound_);
       }
-      if (rightBound_ != 0) {
+      if (rightBound_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, rightBound_);
+          .computeInt64Size(3, rightBound_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -225,9 +225,11 @@ public final class BroadcastProto {
       hash = (37 * hash) + TIMEINDEX_FIELD_NUMBER;
       hash = (53 * hash) + getTimeIndex();
       hash = (37 * hash) + LEFTBOUND_FIELD_NUMBER;
-      hash = (53 * hash) + getLeftBound();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getLeftBound());
       hash = (37 * hash) + RIGHTBOUND_FIELD_NUMBER;
-      hash = (53 * hash) + getRightBound();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getRightBound());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -363,9 +365,9 @@ public final class BroadcastProto {
         super.clear();
         timeIndex_ = 0;
 
-        leftBound_ = 0;
+        leftBound_ = 0L;
 
-        rightBound_ = 0;
+        rightBound_ = 0L;
 
         return this;
       }
@@ -447,10 +449,10 @@ public final class BroadcastProto {
         if (other.getTimeIndex() != 0) {
           setTimeIndex(other.getTimeIndex());
         }
-        if (other.getLeftBound() != 0) {
+        if (other.getLeftBound() != 0L) {
           setLeftBound(other.getLeftBound());
         }
-        if (other.getRightBound() != 0) {
+        if (other.getRightBound() != 0L) {
           setRightBound(other.getRightBound());
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -508,54 +510,54 @@ public final class BroadcastProto {
         return this;
       }
 
-      private int leftBound_ ;
+      private long leftBound_ ;
       /**
-       * <code>int32 leftBound = 2;</code>
+       * <code>int64 leftBound = 2;</code>
        */
-      public int getLeftBound() {
+      public long getLeftBound() {
         return leftBound_;
       }
       /**
-       * <code>int32 leftBound = 2;</code>
+       * <code>int64 leftBound = 2;</code>
        */
-      public Builder setLeftBound(int value) {
+      public Builder setLeftBound(long value) {
 
         leftBound_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 leftBound = 2;</code>
+       * <code>int64 leftBound = 2;</code>
        */
       public Builder clearLeftBound() {
 
-        leftBound_ = 0;
+        leftBound_ = 0L;
         onChanged();
         return this;
       }
 
-      private int rightBound_ ;
+      private long rightBound_ ;
       /**
-       * <code>int32 rightBound = 3;</code>
+       * <code>int64 rightBound = 3;</code>
        */
-      public int getRightBound() {
+      public long getRightBound() {
         return rightBound_;
       }
       /**
-       * <code>int32 rightBound = 3;</code>
+       * <code>int64 rightBound = 3;</code>
        */
-      public Builder setRightBound(int value) {
+      public Builder setRightBound(long value) {
 
         rightBound_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 rightBound = 3;</code>
+       * <code>int64 rightBound = 3;</code>
        */
       public Builder clearRightBound() {
 
-        rightBound_ = 0;
+        rightBound_ = 0L;
         onChanged();
         return this;
       }
@@ -1235,8 +1237,8 @@ public final class BroadcastProto {
   static {
     String[] descriptorData = {
       "\n\017broadcast.proto\022\005proto\"H\n\014BroadRequest" +
-      "\022\021\n\ttimeIndex\030\001 \001(\005\022\021\n\tleftBound\030\002 \001(\005\022\022" +
-      "\n\nrightBound\030\003 \001(\005\"\036\n\rBroadResponse\022\r\n\005d" +
+      "\022\021\n\ttimeIndex\030\001 \001(\005\022\021\n\tleftBound\030\002 \001(\003\022\022" +
+      "\n\nrightBound\030\003 \001(\003\"\036\n\rBroadResponse\022\r\n\005d" +
       "ests\030\001 \003(\t2H\n\017BroadcastSearch\0225\n\006search\022" +
       "\023.proto.BroadRequest\032\024.proto.BroadRespon" +
       "se\"\000B4\n\"edu.buaa.act.jcsindex.global.pro" +

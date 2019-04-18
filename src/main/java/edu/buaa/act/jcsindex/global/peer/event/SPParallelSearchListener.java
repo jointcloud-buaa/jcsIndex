@@ -4,15 +4,14 @@ import edu.buaa.act.jcsindex.global.AbstractInstance;
 import edu.buaa.act.jcsindex.global.peer.ServerPeer;
 import edu.buaa.act.jcsindex.global.peer.info.*;
 import edu.buaa.act.jcsindex.global.peer.management.EventHandleException;
+import edu.buaa.act.jcsindex.global.proto.BroadcastClient;
 import edu.buaa.act.jcsindex.global.protocol.Head;
 import edu.buaa.act.jcsindex.global.protocol.Message;
 import edu.buaa.act.jcsindex.global.protocol.MsgType;
-import edu.buaa.act.jcsindex.global.protocol.body.SPFindParentBody;
-import edu.buaa.act.jcsindex.global.protocol.body.SPParallelSearchBody;
-import edu.buaa.act.jcsindex.global.protocol.body.SPSearchExactBody;
-import edu.buaa.act.jcsindex.global.protocol.body.SPSearchExactResultBody;
+import edu.buaa.act.jcsindex.global.protocol.body.*;
 
 import java.io.ObjectOutputStream;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -64,12 +63,25 @@ public class SPParallelSearchListener extends ActionAdapter {
                 // 5. 最后一个节点负责把结果返回给Requestor
                 if (treeNode.getContent().satisfyRange(searchedData)) {
                     // 直接符合要求找到合适的节点
-
                     // 首先获取所有子树节点
-
-                    // 其次获取内容
-
-                    // 结合内容，返回给上层节点
+                    BroadcastClient client = new BroadcastClient(serverpeer.getPhysicalInfo().getIP());
+                    // TODO: 这里需要注意，后续需要修改Baton网络的值
+                    List<String> ans = client.broadcastSearch(searchedData.getTimeIndex(), searchedData.getLeftBound(), searchedData.getRightBound());
+                    // 结合内容，返回给上层节点，需要实现一个新的消息类型
+                    if (treeNode.getParentNode() != null) {
+                        body.setLogicalDestination(treeNode.getParentNode().getLogicalInfo());
+                        thead.setMsgType(MsgType.SP_SEARCH_PARENT.getValue());
+                        SPSearchParentBody tbody = new SPSearchParentBody(body);
+                        tbody.setDests(ans);
+                        result = new Message(thead, tbody);
+                        serverpeer.sendMessage(treeNode.getParentNode().getPhysicalInfo(), result);
+                    } else {
+                        // 从这里直接返回结果
+                        thead.setMsgType(MsgType.SP_PARALLEL_SEARCH_RESULT.getValue());
+                        SPParallelSearchResultBody tbody = new SPParallelSearchResultBody(body.getPhysicalSender(), body.getLogicalSender(), ans, null);
+                        result = new Message(thead, tbody);
+                        serverpeer.sendMessage(body.getPhysicalRequester(), result);
+                    }
                 } else {
                     // 把请求传递给父节点，理论上是需要一个新的逻辑(虽然会有很多重复的逻辑在里面)
                     // TODO: 是否有必要修改physicalSender和logicalSender

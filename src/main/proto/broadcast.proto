@@ -10,8 +10,8 @@ service BroadcastSearch {
 
 message BroadRequest {
   int32 timeIndex = 1;
-  int32 leftBound = 2;
-  int32 rightBound = 3;
+  int64 leftBound = 2;
+  int64 rightBound = 3;
 }
 
 message BroadResponse {

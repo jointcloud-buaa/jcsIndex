@@ -5,20 +5,18 @@ import edu.buaa.act.jcsindex.global.peer.info.LogicalInfo;
 import edu.buaa.act.jcsindex.global.peer.info.PhysicalInfo;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * Created by shimin at 4/11/2019 10:18 PM
+ * Created by shmin at 4/18/2019 10:33 PM
  **/
-public class SPFindParentBody extends Body implements Serializable {
+public class SPParallelSearchResultBody extends Body implements Serializable {
     // private members
-    private static final long serialVersionUID = 8463152687562874898L;
+    private static final long serialVersionUID = 8463152687562574898L;
 
     private PhysicalInfo physicalSender;
     private LogicalInfo logicalSender;
-    private PhysicalInfo physicalRequester;
-    private LogicalInfo logicalRequester;
-    // TODO: 只能对应一个时段的Search
-    private JcsTuple tuple;
+    private List<String> dests;
     private LogicalInfo  logicalDestination;
 
     /**
@@ -26,43 +24,24 @@ public class SPFindParentBody extends Body implements Serializable {
      *
      * @param physicalSender physical address of the sender
      * @param logicalSender logical address of the sender
-     * @param tuple tuple item wanted to insert
+     * @param dests dests of node
      * @param logicalDestination logical address of the receiver
      */
-    public SPFindParentBody(PhysicalInfo physicalSender, LogicalInfo logicalSender, PhysicalInfo physicalRequester, LogicalInfo logicalRequester,
-                                JcsTuple tuple, LogicalInfo logicalDestination)
+    public SPParallelSearchResultBody(PhysicalInfo physicalSender, LogicalInfo logicalSender,
+                            List<String> dests, LogicalInfo logicalDestination)
     {
         this.physicalSender = physicalSender;
         this.logicalSender = logicalSender;
-        this.physicalRequester = physicalRequester;
-        this.logicalRequester = logicalRequester;
-        this.tuple = tuple;
+        this.dests = dests;
         this.logicalDestination = logicalDestination;
     }
 
-    public SPFindParentBody(SPParallelSearchBody body) {
-        this.physicalSender = body.getPhysicalSender();
-        this.logicalSender = body.getLogicalSender();
-        this.physicalRequester = body.getPhysicalRequester();
-        this.logicalRequester = body.getLogicalRequester();
-        this.tuple = body.getTuple();
-        this.logicalDestination = body.getLogicalDestination();
+    public List<String> getDests() {
+        return dests;
     }
 
-    public PhysicalInfo getPhysicalRequester() {
-        return physicalRequester;
-    }
-
-    public void setPhysicalRequester(PhysicalInfo physicalRequester) {
-        this.physicalRequester = physicalRequester;
-    }
-
-    public LogicalInfo getLogicalRequester() {
-        return logicalRequester;
-    }
-
-    public void setLogicalRequester(LogicalInfo logicalRequester) {
-        this.logicalRequester = logicalRequester;
+    public void setDests(List<String> dests) {
+        this.dests = dests;
     }
 
     /**
@@ -105,15 +84,6 @@ public class SPFindParentBody extends Body implements Serializable {
         return this.logicalSender;
     }
 
-    /**
-     * Get tuple item wanted to insert
-     *
-     * @return tuple item wanted to insert
-     */
-    public JcsTuple getTuple()
-    {
-        return this.tuple;
-    }
 
     /**
      * Update logical address of the receiver
@@ -152,7 +122,6 @@ public class SPFindParentBody extends Body implements Serializable {
             outMsg += ":" + logicalSender.toString();
         }
 
-        outMsg += ":" + tuple.toString();
         if (logicalDestination == null)
         {
             outMsg += ":null";
@@ -164,3 +133,4 @@ public class SPFindParentBody extends Body implements Serializable {
         return outMsg;
     }
 }
+
