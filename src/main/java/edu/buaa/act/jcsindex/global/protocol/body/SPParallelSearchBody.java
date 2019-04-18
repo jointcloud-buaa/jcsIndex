@@ -7,14 +7,17 @@ import edu.buaa.act.jcsindex.global.peer.info.PhysicalInfo;
 import java.io.Serializable;
 
 /**
- * Created by shmin at 4/11/2019 4:23 PM
+ * Created by shimin at 4/11/2019 9:05 PM
  **/
-public class SPUpdateTagBody extends Body implements Serializable {
+public class SPParallelSearchBody extends Body implements Serializable {
     // private members
-    private static final long serialVersionUID = 8563152697562474898L;
+    private static final long serialVersionUID = 8563152687562874898L;
 
     private PhysicalInfo physicalSender;
     private LogicalInfo logicalSender;
+    private PhysicalInfo physicalRequester;
+    private LogicalInfo logicalRequester;
+    // TODO: 只能对应一个时段的Search
     private JcsTuple tuple;
     private LogicalInfo  logicalDestination;
 
@@ -23,30 +26,34 @@ public class SPUpdateTagBody extends Body implements Serializable {
      *
      * @param physicalSender physical address of the sender
      * @param logicalSender logical address of the sender
-     * @param tuple tagValue
+     * @param tuple tuple item wanted to insert
      * @param logicalDestination logical address of the receiver
      */
-    public SPUpdateTagBody(PhysicalInfo physicalSender, LogicalInfo logicalSender,
+    public SPParallelSearchBody(PhysicalInfo physicalSender, LogicalInfo logicalSender, PhysicalInfo physicalRequester, LogicalInfo logicalRequester,
                          JcsTuple tuple, LogicalInfo logicalDestination)
     {
         this.physicalSender = physicalSender;
         this.logicalSender = logicalSender;
+        this.physicalRequester = physicalRequester;
+        this.logicalRequester = logicalRequester;
         this.tuple = tuple;
         this.logicalDestination = logicalDestination;
     }
 
-    public SPUpdateTagBody(SPPublishBody body) {
-        this.physicalSender = body.getPhysicalSender();
-        this.logicalSender = body.getLogicalSender();
-        this.tuple = body.getTuple();
-        this.logicalDestination = body.getLogicalDestination();
+    public PhysicalInfo getPhysicalRequester() {
+        return physicalRequester;
     }
 
-    public SPUpdateTagBody(SPPublishParentBody body) {
-        this.physicalSender = body.getPhysicalSender();
-        this.logicalSender = body.getLogicalSender();
-        this.tuple = body.getTuple();
-        this.logicalDestination = body.getLogicalDestination();
+    public void setPhysicalRequester(PhysicalInfo physicalRequester) {
+        this.physicalRequester = physicalRequester;
+    }
+
+    public LogicalInfo getLogicalRequester() {
+        return logicalRequester;
+    }
+
+    public void setLogicalRequester(LogicalInfo logicalRequester) {
+        this.logicalRequester = logicalRequester;
     }
 
     /**
@@ -117,6 +124,47 @@ public class SPUpdateTagBody extends Body implements Serializable {
     public LogicalInfo getLogicalDestination()
     {
         return this.logicalDestination;
+    }
+
+    /**
+     * Return a readable string for testing or writing in the log file
+     *
+     * @return a readable string
+     */
+    public String getString()
+    {
+        String outMsg;
+
+        outMsg = "PUBLISH";
+        outMsg += "\n\t Physical Sender:" + physicalSender.toString();
+        if (logicalSender == null)
+        {
+            outMsg += "\n\t Logical Sender:null";
+        }
+        else
+        {
+            outMsg += "\n\t Logical Sender:" + logicalSender.toString();
+        }
+
+        outMsg += "\n\t Physical Requester:" + physicalRequester.toString();
+
+        if (logicalRequester == null) {
+            outMsg += "\n\t Logical Requestor null";
+        } else {
+            outMsg += "\n\t Logical Requestor:" + logicalRequester.toString();
+        }
+
+        outMsg += "\n\t Tuple:" + tuple.toString();
+        if (logicalDestination == null)
+        {
+            outMsg += "\n\t Logical Destination:null";
+        }
+        else
+        {
+            outMsg += "\n\t Logical Destination:" + logicalDestination.toString();
+        }
+
+        return outMsg;
     }
 
     @Override

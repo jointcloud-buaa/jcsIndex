@@ -247,5 +247,4 @@ public class SPSearchExactListener extends ActionAdapter
 		}
 		return false;
 	}
-
 }

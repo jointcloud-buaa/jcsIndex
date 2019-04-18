@@ -549,7 +549,9 @@ public enum MsgType
 	 */
 	SP_PUBLISH								(superpeer_to_superpeer.key + 60),
 	SP_PUBLISH_PARENT						(superpeer_to_superpeer.key + 61),
-	SP_UPDATE_TAG						(superpeer_to_superpeer.key + 62),
+	SP_UPDATE_TAG						    (superpeer_to_superpeer.key + 62),
+	SP_PARALLEL_SEARCH						(superpeer_to_superpeer.key + 63),
+	SP_FIND_PARENT						    (superpeer_to_superpeer.key + 64),
 	
 	/* define CA MESSAGE BELLOW */
 	cert_authority							(common.key + 600),
@@ -1196,6 +1198,10 @@ public enum MsgType
 			result = "PUBLISH PARENT JCSTUPLE";
 		} else if (MsgType.SP_UPDATE_TAG.getValue() == msgType) {
 			result = "UPDATE NODE TAG";
+		} else if (MsgType.SP_PARALLEL_SEARCH.getValue() == msgType) {
+			result = "PARALLEL SEARCH";
+		} else if (MsgType.SP_FIND_PARENT.getValue() == msgType) {
+			result = "FIND PARENT";
 		}
 		// -------------- FOR CERTICATE AUTHORITY --------------
 		else if (MsgType.CA_GET_CERT.getValue() == msgType)

@@ -132,17 +132,21 @@ public class DataNodeImpl implements IDataNode {
         // TODO：该部分存在魔数，后续需要修改
         int start = (int )(startTime - 1456761600) / 3600 % 744;
         int end = (int )(endTime - 1456761600) / 3600 % 744;
+        // TODO: 暂时固定
+        start = 32;
+        end = 33;
         List<String> sub = new ArrayList<>();
         int x1 = gridInstance.getX(rectangle.minX);
         int y1 = gridInstance.getY(rectangle.minY);
         int x2 = gridInstance.getX(rectangle.maxX);
         int y2 = gridInstance.getY(rectangle.maxY);
+        System.out.println("HELLO SAM: " + rectangle.minX + " " + rectangle.minY + " " +  rectangle.maxX + " " + rectangle.maxY);
         for (int time = start; time < end; time++) {
             try {
                 for (int i = x1; i < x2; i++) {
                     for (int j = y1; j < y2; j++) {
                         int gridId = ZOrder.getZOrderStr(i, j);
-                        if (indexSummary.contains(time, gridId)) continue;
+                        // if (indexSummary.contains(time, gridId)) continue;
                         SearchResult sr = indexs[time].searchKey(gridId, true);
                         if (sr.getValues() != null) {
                             sub.addAll(sr.getValues());

@@ -1,0 +1,19 @@
+syntax = "proto3";
+package proto;
+
+option java_package = "edu.buaa.act.jcsindex.global.proto";
+option java_outer_classname = "BroadcastProto";
+
+service BroadcastSearch {
+  rpc search(BroadRequest) returns (BroadResponse) {}
+}
+
+message BroadRequest {
+  int32 timeIndex = 1;
+  int32 leftBound = 2;
+  int32 rightBound = 3;
+}
+
+message BroadResponse {
+  repeated string dests = 1;
+}

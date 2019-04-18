@@ -7,14 +7,17 @@ import edu.buaa.act.jcsindex.global.peer.info.PhysicalInfo;
 import java.io.Serializable;
 
 /**
- * Created by shmin at 4/11/2019 4:23 PM
+ * Created by shmin at 4/11/2019 10:18 PM
  **/
-public class SPUpdateTagBody extends Body implements Serializable {
+public class SPFindParentBody extends Body implements Serializable {
     // private members
-    private static final long serialVersionUID = 8563152697562474898L;
+    private static final long serialVersionUID = 8563152687562874898L;
 
     private PhysicalInfo physicalSender;
     private LogicalInfo logicalSender;
+    private PhysicalInfo physicalRequester;
+    private LogicalInfo logicalRequester;
+    // TODO: 只能对应一个时段的Search
     private JcsTuple tuple;
     private LogicalInfo  logicalDestination;
 
@@ -23,30 +26,43 @@ public class SPUpdateTagBody extends Body implements Serializable {
      *
      * @param physicalSender physical address of the sender
      * @param logicalSender logical address of the sender
-     * @param tuple tagValue
+     * @param tuple tuple item wanted to insert
      * @param logicalDestination logical address of the receiver
      */
-    public SPUpdateTagBody(PhysicalInfo physicalSender, LogicalInfo logicalSender,
-                         JcsTuple tuple, LogicalInfo logicalDestination)
+    public SPFindParentBody(PhysicalInfo physicalSender, LogicalInfo logicalSender, PhysicalInfo physicalRequester, LogicalInfo logicalRequester,
+                                JcsTuple tuple, LogicalInfo logicalDestination)
     {
         this.physicalSender = physicalSender;
         this.logicalSender = logicalSender;
+        this.physicalRequester = physicalRequester;
+        this.logicalRequester = logicalRequester;
         this.tuple = tuple;
         this.logicalDestination = logicalDestination;
     }
 
-    public SPUpdateTagBody(SPPublishBody body) {
+    public SPFindParentBody(SPParallelSearchBody body) {
         this.physicalSender = body.getPhysicalSender();
         this.logicalSender = body.getLogicalSender();
+        this.physicalRequester = body.getPhysicalRequester();
+        this.logicalRequester = body.getLogicalRequester();
         this.tuple = body.getTuple();
         this.logicalDestination = body.getLogicalDestination();
     }
 
-    public SPUpdateTagBody(SPPublishParentBody body) {
-        this.physicalSender = body.getPhysicalSender();
-        this.logicalSender = body.getLogicalSender();
-        this.tuple = body.getTuple();
-        this.logicalDestination = body.getLogicalDestination();
+    public PhysicalInfo getPhysicalRequester() {
+        return physicalRequester;
+    }
+
+    public void setPhysicalRequester(PhysicalInfo physicalRequester) {
+        this.physicalRequester = physicalRequester;
+    }
+
+    public LogicalInfo getLogicalRequester() {
+        return logicalRequester;
+    }
+
+    public void setLogicalRequester(LogicalInfo logicalRequester) {
+        this.logicalRequester = logicalRequester;
     }
 
     /**
@@ -119,6 +135,7 @@ public class SPUpdateTagBody extends Body implements Serializable {
         return this.logicalDestination;
     }
 
+
     @Override
     public String toString()
     {
@@ -144,7 +161,6 @@ public class SPUpdateTagBody extends Body implements Serializable {
         {
             outMsg += ":" + logicalDestination.toString();
         }
-
         return outMsg;
     }
 }
