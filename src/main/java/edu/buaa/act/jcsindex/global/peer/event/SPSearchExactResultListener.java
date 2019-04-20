@@ -82,5 +82,4 @@ public class SPSearchExactResultListener extends ActionAdapter
 		}
 		return false;
 	}
-
 }

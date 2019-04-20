@@ -167,25 +167,19 @@ public class RoutingTableInfo implements Serializable
 	{
 	    RoutingItemInfo tmpInfo;
 	    String outMsg;
-	    outMsg = String.valueOf(tableSize);
+	    outMsg = "(tableSize, " + String.valueOf(tableSize) + ")\n";
 	    if (tableSize == 0)
-	    	outMsg += "#null";
+	    	outMsg += "No Table";
 	    else
 	    {
-	    	outMsg += "#";
-	    	for (int i = 0; i < tableSize - 1; i++)
+	    	for (int i = 0; i < tableSize; i++)
 	    	{
 	    		tmpInfo = nodeList.get(i);
 	        	if (tmpInfo == null)
-	        		outMsg += "null@";
+	        		outMsg += "NULL for now";
 	        	else
-	        		outMsg += tmpInfo.toString() + "@";
+	        		outMsg += tmpInfo.toString() + "\n";
 	    	}
-	    	tmpInfo = nodeList.get(tableSize - 1);
-	    	if (tmpInfo == null)
-	    		outMsg += "null";
-	    	else
-	    		outMsg += tmpInfo.toString();
 	    }
 	    return outMsg;
 	}

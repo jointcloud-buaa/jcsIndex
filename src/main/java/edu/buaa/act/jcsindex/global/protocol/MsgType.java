@@ -554,6 +554,7 @@ public enum MsgType
 	SP_FIND_PARENT						    (superpeer_to_superpeer.key + 64),
 	SP_SEARCH_PARENT						(superpeer_to_superpeer.key + 65),
 	SP_PARALLEL_SEARCH_RESULT				(superpeer_to_superpeer.key + 66),
+	SP_UPDATE_SUBTREE_RANGE                 (superpeer_to_superpeer.key + 67),
 	
 	/* define CA MESSAGE BELLOW */
 	cert_authority							(common.key + 600),
@@ -1208,6 +1209,8 @@ public enum MsgType
 			result = "SEARCH PARENT WITH TAG VALUE";
 		} else if (MsgType.SP_PARALLEL_SEARCH_RESULT.getValue() == msgType) {
 			result = "PARALLEL SEARCH RESULT";
+		} else if (MsgType.SP_UPDATE_SUBTREE_RANGE.getValue() == msgType) {
+			result = "SP UPDATE SUBTREE RANGE";
 		}
 		// -------------- FOR CERTICATE AUTHORITY --------------
 		else if (MsgType.CA_GET_CERT.getValue() == msgType)

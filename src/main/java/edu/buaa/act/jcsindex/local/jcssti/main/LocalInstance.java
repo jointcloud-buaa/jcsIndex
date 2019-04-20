@@ -11,9 +11,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * Created by shmin at 2018/7/6 0:59
+ * Created by shimin at 2018/7/6 0:59
  **/
-public class MainInstance {
+public class LocalInstance {
     public static void main(String[] args) throws Exception{
         // 获取Configuration
         Configuration conf = getConfiguration();

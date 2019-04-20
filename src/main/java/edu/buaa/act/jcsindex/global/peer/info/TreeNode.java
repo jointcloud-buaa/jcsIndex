@@ -815,8 +815,12 @@ public class TreeNode implements Serializable
 		} else {
 			sb.append(rightAdjacent.formatedInfo()).append("\n");
 		}
-		// TODO: 暂时不输出左右路由表
-		sb.append("Range: ");
+		// TODO: 输出左右路由表
+		sb.append("Left Routing Table: \n" );
+		sb.append(leftRoutingTable.toString());
+		sb.append("\nRight Routing Table: \n");
+		sb.append(rightRoutingTable.toString());
+		sb.append("\nRange: ");
 		sb.append("(").append(content.getMinValue().toString()).append(", ").append(content.getMaxValue().toString()).append(")");
 		// TODO: 输出subtree范围
 		sb.append("\nSubtree Range: ");

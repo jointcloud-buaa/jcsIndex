@@ -4,7 +4,6 @@ import edu.buaa.act.jcsindex.global.AbstractInstance;
 import edu.buaa.act.jcsindex.global.peer.ServerPeer;
 import edu.buaa.act.jcsindex.global.peer.info.BoundaryValue;
 import edu.buaa.act.jcsindex.global.peer.info.JcsTuple;
-import edu.buaa.act.jcsindex.global.peer.info.RoutingItemInfo;
 import edu.buaa.act.jcsindex.global.peer.info.TreeNode;
 import edu.buaa.act.jcsindex.global.peer.management.EventHandleException;
 import edu.buaa.act.jcsindex.global.proto.BroadcastClient;

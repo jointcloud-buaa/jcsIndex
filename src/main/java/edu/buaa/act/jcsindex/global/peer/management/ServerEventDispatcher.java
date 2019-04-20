@@ -128,6 +128,12 @@ public class ServerEventDispatcher extends AbstractEventDispatcher
 		this.addActionListener(new SPPublishListener(instance));
 		this.addActionListener(new SPPublishParentListener(instance));
 		this.addActionListener(new SPUpdateTagListener(instance));
+		this.addActionListener(new SPUpdateSubtreeRangeListener(instance));
+
+		this.addActionListener(new SPParallelSearchListener(instance));
+		this.addActionListener(new SPSearchParentListener(instance));
+		this.addActionListener(new SPFindParentListener(instance));
+		this.addActionListener(new SPParallelSearchResultListener(instance));
 
 		/*
 		 * SPSearchExactListener, SPSearchExactBundleListener,

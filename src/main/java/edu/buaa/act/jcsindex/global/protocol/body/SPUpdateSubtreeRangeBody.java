@@ -1,5 +1,6 @@
 package edu.buaa.act.jcsindex.global.protocol.body;
 
+import edu.buaa.act.jcsindex.global.peer.info.BoundaryValue;
 import edu.buaa.act.jcsindex.global.peer.info.JcsTuple;
 import edu.buaa.act.jcsindex.global.peer.info.LogicalInfo;
 import edu.buaa.act.jcsindex.global.peer.info.PhysicalInfo;
@@ -7,15 +8,15 @@ import edu.buaa.act.jcsindex.global.peer.info.PhysicalInfo;
 import java.io.Serializable;
 
 /**
- * Created by shimin at 4/11/2019 4:23 PM
+ * Created by shimin at 4/19/2019 11:46 PM
  **/
-public class SPUpdateTagBody extends Body implements Serializable {
+public class SPUpdateSubtreeRangeBody extends Body implements Serializable {
     // private members
-    private static final long serialVersionUID = 8563152697562474898L;
+    private static final long serialVersionUID = 8563152687562474898L;
 
     private PhysicalInfo physicalSender;
     private LogicalInfo logicalSender;
-    private JcsTuple tuple;
+    private BoundaryValue value;
     private LogicalInfo  logicalDestination;
 
     /**
@@ -23,30 +24,16 @@ public class SPUpdateTagBody extends Body implements Serializable {
      *
      * @param physicalSender physical address of the sender
      * @param logicalSender logical address of the sender
-     * @param tuple tagValue
+     * @param value tagValue
      * @param logicalDestination logical address of the receiver
      */
-    public SPUpdateTagBody(PhysicalInfo physicalSender, LogicalInfo logicalSender,
-                         JcsTuple tuple, LogicalInfo logicalDestination)
+    public SPUpdateSubtreeRangeBody(PhysicalInfo physicalSender, LogicalInfo logicalSender,
+                           BoundaryValue value, LogicalInfo logicalDestination)
     {
         this.physicalSender = physicalSender;
         this.logicalSender = logicalSender;
-        this.tuple = tuple;
+        this.value = value;
         this.logicalDestination = logicalDestination;
-    }
-
-    public SPUpdateTagBody(SPPublishBody body) {
-        this.physicalSender = body.getPhysicalSender();
-        this.logicalSender = body.getLogicalSender();
-        this.tuple = body.getTuple();
-        this.logicalDestination = body.getLogicalDestination();
-    }
-
-    public SPUpdateTagBody(SPPublishParentBody body) {
-        this.physicalSender = body.getPhysicalSender();
-        this.logicalSender = body.getLogicalSender();
-        this.tuple = body.getTuple();
-        this.logicalDestination = body.getLogicalDestination();
     }
 
     /**
@@ -89,14 +76,8 @@ public class SPUpdateTagBody extends Body implements Serializable {
         return this.logicalSender;
     }
 
-    /**
-     * Get tuple item wanted to insert
-     *
-     * @return tuple item wanted to insert
-     */
-    public JcsTuple getTuple()
-    {
-        return this.tuple;
+    public BoundaryValue getValue() {
+        return value;
     }
 
     /**
@@ -135,7 +116,7 @@ public class SPUpdateTagBody extends Body implements Serializable {
             outMsg += ":" + logicalSender.toString();
         }
 
-        outMsg += ":" + tuple.toString();
+        outMsg += ":" + value.toString();
         if (logicalDestination == null)
         {
             outMsg += ":null";
@@ -148,3 +129,4 @@ public class SPUpdateTagBody extends Body implements Serializable {
         return outMsg;
     }
 }
+

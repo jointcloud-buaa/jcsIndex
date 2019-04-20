@@ -33,7 +33,8 @@ public class CmdServer implements Runnable {
                 .append("(5) To insert an item into Baton Network, using command like `insert key value`\n")
                 .append("(6) To insert an jcstuple into Baton Network, using command like `inserttuple timeIndex key value`\n")
                 .append("(7) To query an item in the Baton Network, using command like `query key`\n")
-                .append("(8) To test insert and storage, using command like `test key value`")
+                .append("(8) To query an jcstuple in the Baton Network, using command like `pquery timeIndex leftbound rightbound`\n")
+                .append("(9) To test insert and storage, using command like `test key value`")
                 .toString();
         final String JOIN_CMD = "join";
         final String LEAVE_CMD = "leave";
@@ -43,6 +44,7 @@ public class CmdServer implements Runnable {
         final String INSERTTUPLE_CMD = "inserttuple";
         final String STORAGE_CMD = "storage";
         final String QUERY_CMD = "query";
+        final String PQUERY_CMD = "pquery";
         final String TEST_CMD = "test";
 
         Scanner sc = new Scanner(System.in);
@@ -151,9 +153,10 @@ public class CmdServer implements Runnable {
                             System.out.println("FORMAT: insert key value");
                         }
                     } else if (args[0].equals(INSERTTUPLE_CMD)){
-                        if (args.length == 4) {
+                        if (args.length == 5) {
                             int timeIndex = Integer.parseInt(args[1]);
                             long left = Long.parseLong(args[2]), right = Long.parseLong(args[3]);
+                            String desc = args[4];
                             try {
                                 Socket socket = new Socket(serverPeer.getPhysicalInfo().getIP(), serverPeer.getPhysicalInfo().getPort());
 
@@ -163,7 +166,7 @@ public class CmdServer implements Runnable {
                                 Body body = new SPPublishBody(
                                         serverPeer.getPhysicalInfo(),
                                         serverPeer.getListItem(0).getLogicalInfo(),
-                                        new JcsTuple(timeIndex, left, right, "localhost:40000"),
+                                        new JcsTuple(timeIndex, left, right, desc),
                                         null
                                 );
                                 Message message = new Message(head, body);
@@ -213,7 +216,42 @@ public class CmdServer implements Runnable {
                         } else {
                             System.out.println("FORMAT: query key");
                         }
-                    } else if (args[0].equals(HELP_CMD)) {
+                    } else if (args[0].equals(PQUERY_CMD)) {
+                        // 查询数据
+                        if (args.length == 4) {
+                            int timeIndex = Integer.parseInt(args[1]);
+                            long left = Long.parseLong(args[2]), right = Long.parseLong(args[3]);
+
+                            try {
+                                Socket socket = new Socket(serverPeer.getPhysicalInfo().getIP(), serverPeer.getPhysicalInfo().getPort());
+
+                                Head head = new Head();
+                                head.setMsgType(MsgType.SP_PARALLEL_SEARCH.getValue());
+
+                                Body body = new SPParallelSearchBody(
+                                        serverPeer.getPhysicalInfo(),
+                                        serverPeer.getListItem(0).getLogicalInfo(),
+                                        serverPeer.getPhysicalInfo(),
+                                        serverPeer.getListItem(0).getLogicalInfo(),
+                                        new JcsTuple(timeIndex, left, right, ""),
+                                        null
+                                );
+
+                                Message message = new Message(head, body);
+
+                                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                                oos.writeObject(message);
+
+                                socket.close();
+                                System.out.println("jcstuple查询输入完成");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            System.out.println("FORMAT: pquery timeIndex leftbound rightbound");
+                        }
+                    }
+                    else if (args[0].equals(HELP_CMD)) {
                         System.out.println(HELP_MSG);
                     } else {
                         System.out.println("UNKNOWN COMMANd");

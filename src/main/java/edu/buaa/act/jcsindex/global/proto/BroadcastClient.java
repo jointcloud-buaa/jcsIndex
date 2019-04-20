@@ -21,7 +21,7 @@ public class BroadcastClient {
 
     public BroadcastClient(String host) {
         this(ManagedChannelBuilder.forAddress(host, 50051)
-                .usePlaintext(true)
+                .usePlaintext()
                 .build());
     }
 

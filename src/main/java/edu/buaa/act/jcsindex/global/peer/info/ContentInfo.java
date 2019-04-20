@@ -91,11 +91,21 @@ public class ContentInfo implements Serializable
 		this.subtreeRangeL = srl;
 		this.subtreeRangeR = srr;
 	}
+
 	public BoundaryValue getSubtreeRangeL() {
 		return subtreeRangeL;
 	}
 	public BoundaryValue getSubtreeRangeR() {
 		return subtreeRangeR;
+	}
+
+	public void setSubtreeRangeL(BoundaryValue subtreeRangeL) {
+		if (this.subtreeRangeL.getLongValue() > subtreeRangeL.getLongValue())
+			this.subtreeRangeL = subtreeRangeL;
+	}
+
+	public void setSubtreeRangeR(BoundaryValue subtreeRangeR) {
+		this.subtreeRangeR = subtreeRangeR;
 	}
 
 	/**
@@ -267,6 +277,7 @@ public class ContentInfo implements Serializable
 	 */
 	public void insertData(IndexValue dataValue, int mode)
 	{
+		System.out.println("HELLO SAM: insertData");
     	IndexValue temptValue, sentinelValue;
 
     	switch (mode)

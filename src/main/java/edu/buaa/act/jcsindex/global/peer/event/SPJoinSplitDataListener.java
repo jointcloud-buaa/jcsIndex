@@ -78,6 +78,13 @@ public class SPJoinSplitDataListener extends ActionAdapter
 			result = new Message(thead, tbody);
 	    	serverpeer.sendMessage(body.getPhysicalNewNode(), result);
 
+	    	// 更新请求节点的父亲节点的子树范围
+			Head nhead = new Head();
+			nhead.setMsgType(MsgType.SP_UPDATE_SUBTREE_RANGE.getValue());
+			SPUpdateSubtreeRangeBody nbody = new SPUpdateSubtreeRangeBody(body.getPhysicalSender(), body.getLogicalSender(), content.getMinValue(), null);
+			result = new Message(nhead, nbody);
+			serverpeer.sendMessage(body.getParentNodeInfo().getPhysicalInfo(), result);
+
 	    	//update adjacent link
 	    	treeNode.setRightAdjacentNode(new AdjacentNodeInfo(body.getPhysicalNewNode(), 
 	    			body.getLogicalNewNode()));

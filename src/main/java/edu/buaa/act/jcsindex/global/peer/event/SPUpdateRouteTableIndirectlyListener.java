@@ -79,9 +79,10 @@ public class SPUpdateRouteTableIndirectlyListener extends ActionAdapter
 				{
 					ChildNodeInfo newLeftChild = body.getInfoSender().getLeftChild();
 					
-					RoutingItemInfo updateNodeInfo = (RoutingItemInfo)
-					treeNode.getLeftRoutingTable().getRoutingTableNode(index);
-					
+					RoutingItemInfo updateNodeInfo = (RoutingItemInfo) treeNode.getLeftRoutingTable().getRoutingTableNode(index);
+
+					// 此处有问题，先看是哪一个出现了问题
+					System.out.println("HELLO SAM: " + updateNodeInfo == null);
 					updateNodeInfo.setLeftChild(newLeftChild);
 					treeNode.getLeftRoutingTable().setRoutingTableNode(updateNodeInfo, index);
 				}

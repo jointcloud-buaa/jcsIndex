@@ -66,7 +66,7 @@ public class SPJoinListener extends ActionAdapter
 			int indexRightRTMiss = -1;
 			
 			RoutingTableInfo leftRT = treeNode.getLeftRoutingTable();
-			for (int i = 0; i < leftRT.getTableSize(); i++) 
+			for (int i = 0; i < leftRT.getTableSize(); i++)
 			{
 				if (leftRT.getRoutingTableNode(i) == null)
 					indexLeftRTMiss = i;
@@ -80,16 +80,16 @@ public class SPJoinListener extends ActionAdapter
 			}
 
 
-			if ((indexLeftRTMiss != -1) || (indexRightRTMiss != -1)) 
+			if ((indexLeftRTMiss != -1) || (indexRightRTMiss != -1))
 			{
 				System.out.println("***Routing table isnt`n full, forward request to its parent");
-				//routing table isn't full, forward request to its parent			
+				//routing table isn't full, forward request to its parent
 				body.setPhysicalSender(serverpeer.getPhysicalInfo());
 				body.setLogicalSender(treeNode.getLogicalInfo());
 				body.setLogicalDestination(treeNode.getParentNode().getLogicalInfo());
 
 				thead.setMsgType(MsgType.SP_JOIN.getValue());
-				result = new Message(thead, body);			
+				result = new Message(thead, body);
 				serverpeer.sendMessage(treeNode.getParentNode().getPhysicalInfo(), result);
 			}
 			else

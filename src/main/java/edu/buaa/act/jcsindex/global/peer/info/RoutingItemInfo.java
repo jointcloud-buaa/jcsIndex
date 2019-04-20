@@ -184,18 +184,22 @@ public class RoutingItemInfo implements Serializable
 	{
 	    String outMsg;
 
-	    outMsg = physicalInfo.toString();
-	    outMsg += "&" + logicalInfo.toString();
+	    outMsg = "(physicalInfo, " + physicalInfo.toString() + ") ";
+	    outMsg += "(logicalInfo, " + logicalInfo.toString() + ") ";
+	    outMsg += "(leftChild, ";
 	    if (leftChild == null)
-	    	outMsg += "&" + "null";
+	    	outMsg += "null) ";
 	    else
-	    	outMsg += "&" + leftChild.toString();
+	    	outMsg += leftChild.toString() + ")";
+	    outMsg += "(rightChild, ";
 	    if (rightChild == null)
-	    	outMsg += "&" + "null";
+	    	outMsg += "null)";
 	    else
-	    	outMsg += "&" + rightChild.toString();
-	    outMsg += "&" + this.minValue.toString();
-	    outMsg += "&" + this.maxValue.toString();
+	    	outMsg += rightChild.toString() + ")";
+	    // TODO: 只输出数字
+		outMsg += "(NodeRange, ";
+	    outMsg += this.minValue.getLongValue() + " ";
+	    outMsg += this.maxValue.getLongValue() + ")";
 
 	    return outMsg;
 	}

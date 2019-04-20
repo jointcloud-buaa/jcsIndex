@@ -139,7 +139,8 @@ public class ServerPeer extends AbstractPeer
 		this.requestManager = new ServerRequestManager(this);
 
 		// TODO: 添加TreeNode。其中TreeNode的作用还成疑问？我以为每个Instance只需要掌握一个就可以了，但是这里居然是一个List
-		ContentInfo content = new ContentInfo(new BoundaryValue(IndexValue.MIN_KEY.getString(), Long.MIN_VALUE), new BoundaryValue(IndexValue.MAX_KEY.getString(), Long.MAX_VALUE), 10, new Vector<IndexValue>());
+		// 这里直接把最小值直接设置为0L,最大值设置为Integer.MAX_VALUE
+		ContentInfo content = new ContentInfo(new BoundaryValue(IndexValue.MIN_KEY.getString(), 0L), new BoundaryValue(IndexValue.MAX_KEY.getString(), Integer.MAX_VALUE), 10, new Vector<IndexValue>());
 		TreeNode treeNode = new TreeNode(new LogicalInfo(0, 1), null, null, null, null, null, new RoutingTableInfo(0), new RoutingTableInfo(0), content, 0, 1);
 		addListItem(treeNode);
 	}
