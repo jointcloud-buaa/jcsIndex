@@ -1,7 +1,7 @@
 package edu.buaa.act.jcsindex.local.jcssti.index.node;
 
 /**
- * Created by shmin at 2018/7/6 0:36
+ * Created by shimin at 2018/7/6 0:36
  **/
 public class NodeInfoPojo {
     private String nodeHost;

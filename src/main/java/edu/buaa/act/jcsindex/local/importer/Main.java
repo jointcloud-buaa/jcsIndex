@@ -14,7 +14,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
- * Created by shmin at 2018/5/9 16:32
+ * Created by shimin at 2018/5/9 16:32
  * 1.　定义接口参数，Main函数应该传入这些参数（sourceZkAddr, destZkAddr, sourceTableName, destTableName, startTime, endTime, splits, index）
  * 2. 读取车俩ID文件，分组，读取对应范围的车俩ID。
  * 3. 读取指定时间段指定车俩的数据，并将数据放入一个队列中

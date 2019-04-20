@@ -3,6 +3,7 @@ package edu.buaa.act.jcsindex;
 import edu.buaa.act.jcsindex.global.CmdServer;
 import edu.buaa.act.jcsindex.global.ServerInstance;
 import edu.buaa.act.jcsindex.global.proto.BroadcastServer;
+import edu.buaa.act.jcsindex.local.jcssti.main.LocalInstance;
 
 /**
  * Created by shimin at 4/19/2019 4:06 PM
@@ -30,6 +31,13 @@ public class MainInstance {
         } else if ((args.length >= 1) && args[0].equals(startupType[1])) {
             // 启动LocalIndex
             System.out.println("start local index");
+            int type = Integer.parseInt(args[1]);
+            String serverName = args[2];
+            try {
+                new LocalInstance().start(type, serverName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             System.out.println("wrong param");
         }

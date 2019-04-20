@@ -14,9 +14,9 @@ import java.net.UnknownHostException;
  * Created by shimin at 2018/7/6 0:59
  **/
 public class LocalInstance {
-    public static void main(String[] args) throws Exception{
+    public void start(int type, String serverName) throws Exception {
         // 获取Configuration
-        Configuration conf = getConfiguration();
+        Configuration conf = getConfiguration(type);
 
         // 获取Hbase Connection的poolSize
         int poolSize = Constants.HBASE_POOL_SIZE;
@@ -24,8 +24,6 @@ public class LocalInstance {
         // 获取Hbase的tableName
         String tableName = Constants.HBASE_TABLE_NAME;
 
-        // 获取本机的主机名，后期可通过主机名获取本机相应的Region
-        String serverName = getServerName();
 
         // 获取GridInstance
         Grid gridInstance = new Grid(Constants.MIN_LONGTITUDE, Constants.MIN_LATITUDE, Constants.MAX_LONGTITUDE, Constants.MAX_LATITUDE, Constants.GRID_SIZE_X, Constants.GRID_SIZE_Y);
@@ -47,13 +45,39 @@ public class LocalInstance {
         new Thread(new CMDServer(dataNode)).start();
     }
 
-    private static Configuration getConfiguration() {
-        Configuration conf = HBaseConfiguration.create();
-        conf.set("hbase.zookeeper.quorum", Constants.ZK_IP);
-        conf.set("hbase.zookeeper.property.clientPort", Constants.ZK_PORT);
-        conf.setLong("hbase.rpc.timeout", Constants.RPC_TIMEOUT);
-        conf.setLong("hbase.client.scanner.caching", Constants.SCANNER_CACHING);
-        return conf;
+    public static void main(String[] args) throws Exception{
+        new LocalInstance().start(1, "test55");
+    }
+
+    private static Configuration getConfiguration(int type) {
+        if (type == 1) {
+            // 192.168.7.55集群
+            Configuration conf = HBaseConfiguration.create();
+            conf.set("hbase.zookeeper.quorum", "192.168.7.55");
+            conf.set("hbase.zookeeper.property.clientPort", Constants.ZK_PORT);
+            conf.setLong("hbase.rpc.timeout", Constants.RPC_TIMEOUT);
+            conf.setLong("hbase.client.scanner.caching", Constants.SCANNER_CACHING);
+            return conf;
+        } else if (type == 2) {
+            // 192.168.7.50集群
+            Configuration conf = HBaseConfiguration.create();
+            conf.set("hbase.zookeeper.quorum", "192.168.7.51");
+            conf.set("hbase.zookeeper.property.clientPort", Constants.ZK_PORT);
+            conf.setLong("hbase.rpc.timeout", Constants.RPC_TIMEOUT);
+            conf.setLong("hbase.client.scanner.caching", Constants.SCANNER_CACHING);
+            return conf;
+        } else if (type == 3) {
+            // 192.168.7.60集群
+            Configuration conf = HBaseConfiguration.create();
+            conf.set("hbase.zookeeper.quorum", "192.168.7.60");
+            conf.set("hbase.zookeeper.property.clientPort", Constants.ZK_PORT);
+            conf.setLong("hbase.rpc.timeout", Constants.RPC_TIMEOUT);
+            conf.setLong("hbase.client.scanner.caching", Constants.SCANNER_CACHING);
+            return conf;
+        } else {
+            // TODO: 需要注意，可能存在问题
+            return null;
+        }
     }
 
     private static String getServerName() {

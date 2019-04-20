@@ -18,7 +18,11 @@ public class Constants {
     public static final String NODE_HOST = "127.0.0.1";
     public static final int NODE_PORT = 9090;
 
+    // 在window本地执行
     public static final String DB_PATH = "D:\\workspace\\jointcloudstorage\\localIndex\\BPlusTree\\DB";
+
+    // 在服务器上执行
+//    public static final String DB_PATH = "/storage/shimin/localindex/";
 
     public static final int N = 744;
 

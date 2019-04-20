@@ -19,6 +19,7 @@ import org.apache.hadoop.hbase.protobuf.generated.AdminProtos;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Threads;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -117,6 +118,11 @@ public class DataNodeImpl implements IDataNode {
         BPlusConfiguration bconf = new BPlusConfiguration(2048);
         BPlusTreePerformanceCounter bPerf = new BPlusTreePerformanceCounter(true);
         boolean recreateTree = false;
+        // 判断是否为空目录
+        File file = new File(dbPath);
+        if (file.listFiles().length == 0) {
+            recreateTree = true;
+        }
         try {
             for (int i = 0; i < indexs.length; i++) {
                 // TODO: 后缀是bin,改成db更合适
