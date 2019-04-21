@@ -1,7 +1,7 @@
 package edu.buaa.act.jcsindex.local.jcssti.main;
 
 /**
- * Created by shmin at 2018/7/19 18:19
+ * Created by shimin at 2018/7/19 18:19
  * TODO: 怎么做很关键？
  * 主要是插入元素的时候，如何做到范围与B-tree的统一
  * 这里可以借鉴Module Range(好像暂时还统一不了)

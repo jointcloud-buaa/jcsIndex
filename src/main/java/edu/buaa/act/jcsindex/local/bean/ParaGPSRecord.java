@@ -18,6 +18,7 @@ public class ParaGPSRecord implements java.io.Externalizable {
     private float longitude;
     private long gpstime;
     private long devicesn;
+    private int clusterid;
 
     public ParaGPSRecord() {
     }
@@ -53,6 +54,14 @@ public class ParaGPSRecord implements java.io.Externalizable {
         this.longitude = in.readFloat();
         this.gpstime = in.readLong();
         this.devicesn = in.readLong();
+    }
+
+    public int getClusterid() {
+        return clusterid;
+    }
+
+    public void setClusterid(int clusterid) {
+        this.clusterid = clusterid;
     }
 
     @Override

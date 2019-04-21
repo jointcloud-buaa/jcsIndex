@@ -21,6 +21,7 @@ import org.apache.hadoop.hbase.util.Threads;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DataNodeImpl implements IDataNode {
     // 本节点的机器名称
     private final String serverName;
+
+    // 本节点的IP地址
+    private final String ip;
+
+    // 本集群的id
+    private final int clusterID;
 
     // HBase表的名字
     private final String tableName;
@@ -65,10 +72,12 @@ public class DataNodeImpl implements IDataNode {
     // HBase线程池
     private HConnection pool;
 
-    public DataNodeImpl(Configuration conf, int poolSize, String tableName, String serverName, Grid gridInstance, String dbPath, int N) {
+    public DataNodeImpl(Configuration conf, int poolSize, String tableName, String serverName, String ip, int clusterID, Grid gridInstance, String dbPath, int N) {
         this.conf = conf;
         this.tableName = tableName;
         this.serverName = serverName;
+        this.ip = ip;
+        this.clusterID = clusterID;
         this.regionInfos = new ArrayList<>();
         this.gridInstance = gridInstance;
         this.dbPath = dbPath;
@@ -95,10 +104,12 @@ public class DataNodeImpl implements IDataNode {
             for (ServerName rsinfo : regionServers) {
                 AdminProtos.AdminService.BlockingInterface server = connection.getAdmin(rsinfo);
 
-                // List all online region from this test55 region server
+                // List all online region from this region server
+                System.out.println("(RegionServer, " + rsinfo.getServerName() + ")");
                 if (rsinfo.getServerName().startsWith(serverName)) {
                     List<HRegionInfo> rInfos = ProtobufUtil.getOnlineRegions(server);
                     for (HRegionInfo rinfo : rInfos) {
+                        System.out.println("-- Region metadata: " + rinfo.getRegionNameAsString());
                         if (rinfo.getRegionNameAsString().startsWith(tableName)) {
                             regionInfos.add(rinfo);
                         }
@@ -106,6 +117,7 @@ public class DataNodeImpl implements IDataNode {
                 }
             }
             connection.close();
+            System.out.println("RegionServer region size is: " + regionInfos.size());
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("无法获取RegionServer上的所有Region");
@@ -120,7 +132,7 @@ public class DataNodeImpl implements IDataNode {
         boolean recreateTree = false;
         // 判断是否为空目录
         File file = new File(dbPath);
-        if (file.listFiles().length == 0) {
+        if (file.listFiles() == null || file.listFiles().length == 0) {
             recreateTree = true;
         }
         try {
@@ -136,8 +148,8 @@ public class DataNodeImpl implements IDataNode {
     @Override
     public List<ParaGPSRecord> rangeQuery(ParaRectangle rectangle, long startTime, long endTime) {
         // TODO：该部分存在魔数，后续需要修改
-        int start = (int )(startTime - 1456761600) / 3600 % 744;
-        int end = (int )(endTime - 1456761600) / 3600 % 744;
+        int start = (int )(startTime - Constants.STARTTIME) / 3600 % Constants.N;
+        int end = (int )(endTime - Constants.STARTTIME) / 3600 % Constants.N;
         // TODO: 暂时固定
         start = 32;
         end = 33;
@@ -183,6 +195,7 @@ public class DataNodeImpl implements IDataNode {
                 gpsRecord.setLatitude((float )Bytes.toDouble(results[i].getValue(Constants.GPSCF, Constants.GPSCF_LATITUDE)));
                 gpsRecord.setDevicesn(Long.parseLong(Bytes.toString(results[i].getValue(Constants.GPSCF, Constants.GPSCF_DEVICESN))));
                 gpsRecord.setGpstime(Bytes.toLong(results[i].getValue(Constants.GPSCF, Constants.GPSCF_TIMESTAMP)));
+                gpsRecord.setClusterid(clusterID);
                 res.add(gpsRecord);
             }
         } catch (Exception e) {
@@ -260,85 +273,161 @@ public class DataNodeImpl implements IDataNode {
      */
     @Override
     public void insert() {
-        System.out.println("开始插入数据");
+        System.out.println("Begin to insert data");
         long start = System.currentTimeMillis();
-        try {
-            // Insert Thread begins
-            for (int ix = 0; ix < regionInfos.size(); ix++) {
-                System.out.println("读取第" + ix + "Region的信息");
-                final int index = ix;
-                List<GPSBean> records = new ArrayList<>();
-                Thread insertThreads = new Thread(new Runnable() {
-                    @Override
-                    public void run(){
-                        try {
-                            scanGPS(conf, Bytes.toBytes("carstest"),regionInfos.get(index).getStartKey(), regionInfos.get(index).getEndKey(), records);
-                        } catch (IOException e) {
-                            System.out.println("读取失败");
-                            e.printStackTrace();
+        for (int ix = 0; ix < regionInfos.size(); ix++) {
+            System.out.println("Read " + ix + "`th region metadata");
+            final int index = ix;
+
+            // split region to two half, then insert
+            String startKey = new String(regionInfos.get(index).getStartKey());
+            String endKey = new String(regionInfos.get(index).getEndKey());
+            System.out.println(startKey);
+            System.out.println(endKey);
+            System.out.println("++++++++++++++++");
+            if (startKey.length() == 0) {
+                BigInteger midKeyBig = new BigInteger(endKey).divide(new BigInteger("2"));
+                String midKey= midKeyBig.toString();
+                for (int i = 0; i < endKey.length(); i++) {
+                    if (endKey.charAt(i) == '0') {
+                        midKey = '0' + midKey;
+                    } else {
+                        break;
+                    }
+                }
+                System.out.println(startKey);
+                System.out.println(midKey);
+                System.out.println(endKey);
+                System.out.println(startKey.length() + " " + midKey.length() + " " + endKey.length());
+            } else if (endKey.length() == 0) {
+                // realInsert(regionInfos.get(index).getStartKey(), regionInfos.get(index).getEndKey());
+                System.out.println("no midkey");
+            } else {
+                int prefix = 0;
+                if (startKey.charAt(0) == '0' && endKey.charAt(0) == '0') {
+                    for (int i = 0; i < startKey.length(); i++) {
+                        if (startKey.charAt(i) == '0' && endKey.charAt(0) == '0') {
+                            prefix++;
+                        } else {
+                            break;
                         }
                     }
-                });
-                insertThreads.run();
-                System.out.println("读取第" + ix + "完成");
+                }
+                String midKey = "";
+                if (startKey.length() != endKey.length()) {
+                    if (startKey.length() < endKey.length()) {
+                        int len = endKey.length() - startKey.length();
+                        for (int i = 0; i < len; i++) {
+                            startKey = startKey + "0";
+                        }
+                        midKey = new BigInteger(startKey).add(new BigInteger(endKey)).divide(new BigInteger("2")).toString();
+                    } else {
+                        int len = startKey.length() - endKey.length();
+                        for (int i = 0; i < len; i++) {
+                            endKey = endKey + "0";
+                        }
+                        midKey = new BigInteger(startKey).add(new BigInteger(endKey)).divide(new BigInteger("2")).toString();
+                    }
+                    for (int i = 0; i < prefix; i++) {
+                        midKey = "0" + midKey;
+                    }
+                    System.out.println(startKey);
+                    System.out.println(midKey);
+                    System.out.println(endKey);
+                    System.out.println(startKey.length() + " " + midKey.length() + " " + endKey.length());
+                } else {
+                    // 二者长度相等，正好
+                    midKey = new BigInteger(startKey).add(new BigInteger(endKey)).divide(new BigInteger("2")).toString();
+                    for (int i = 0; i < prefix; i++) {
+                        midKey = "0" + midKey;
+                    }
+                    System.out.println(startKey);
+                    System.out.println(midKey);
+                    System.out.println(endKey);
+                    System.out.println(startKey.length() + " " + midKey.length() + " " + endKey.length());
+                }
+            }
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("Data insertion completed, elapsed " + (end - start) + " s");
+    }
 
-                GPSBuffer gpsBuffer = new GPSBuffer(records);
-                gpsBuffer.shuffle();
+    private void realInsert(byte[] startKey, byte[] endKey) {
+        try {
+            long start = System.currentTimeMillis();
 
-                AtomicInteger count = new AtomicInteger(0);
-                System.out.println("打印线程：\n");
-                Thread printThread = new Thread(new Runnable() {
+            List<GPSBean> records = new ArrayList<>();
+            Thread insertThreads = new Thread(new Runnable() {
+                @Override
+                public void run(){
+                    try {
+                        scanGPS(conf, Bytes.toBytes(tableName), startKey, endKey, records);
+                    } catch (IOException e) {
+                        System.out.println("Read failed");
+                        e.printStackTrace();
+                    }
+                }
+            });
+            insertThreads.run();
+
+            GPSBuffer gpsBuffer = new GPSBuffer(records);
+            gpsBuffer.shuffle();
+
+            AtomicInteger count = new AtomicInteger(0);
+            System.out.println("Print Thread：\n");
+            Thread printThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (!gpsBuffer.isFinished()) {
+                        try {
+                            System.out.println("Already insert data num is " + count.get());
+                            Threads.sleep(5000);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            });
+            printThread.start();
+
+            Thread[] threads = new Thread[24];
+            for (int i = 0; i < threads.length; i++) {
+                threads[i] = new Thread(new Runnable() {
+                    GPSBean gpsBean;
+
                     @Override
                     public void run() {
-                        while (!gpsBuffer.isFinished()) {
+                        while ((gpsBean = gpsBuffer.getNextGPSBeanForInsert()) != null) {
+                            int index = (int )((gpsBean.timestamp - Constants.STARTTIME) / 3600 % Constants.N);
+                            int gridId = ZOrder.getZOrderStr(gridInstance.getX(gpsBean.longitude), gridInstance.getY(gpsBean.latitude));
                             try {
-                                System.out.println("已插入数据: " + count.get());
-                                Threads.sleep(5000);
+                                indexs[index].insertKey(gridId, gpsBean.rowKey, true);
+                                count.incrementAndGet();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
                         }
                     }
                 });
-                printThread.start();
-
-                Thread[] threads = new Thread[24];
-                for (int i = 0; i < threads.length; i++) {
-                    threads[i] = new Thread(new Runnable() {
-                        GPSBean gpsBean;
-
-                        @Override
-                        public void run() {
-                            while ((gpsBean = gpsBuffer.getNextGPSBeanForInsert()) != null) {
-                                int index = (int )((gpsBean.timestamp - 1456761600) / 3600 % 744);
-                                int gridId = ZOrder.getZOrderStr(gridInstance.getX(gpsBean.longitude), gridInstance.getY(gpsBean.latitude));
-                                try {
-                                    indexs[index].insertKey(gridId, gpsBean.rowKey, true);
-                                    count.incrementAndGet();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-                    threads[i].start();
-                }
-                for (int i = 0; i < threads.length; i++) {
-                    threads[i].join();
-                }
-                printThread.join();
+                threads[i].start();
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            for (int i = 0; i < threads.length; i++) {
+                threads[i].join();
+            }
+            printThread.join();
+            long now = System.currentTimeMillis();
+            System.out.println("Data inserting, elapsed " + (now - start));
+        } catch (Exception e) {
+            exit();
+            e.printStackTrace();
         }
-        long end = System.currentTimeMillis();
-        System.out.println("插入数据结束, 耗时：" + (end - start));
     }
 
     private int scanGPS(Configuration conf, byte[] tableName, byte[] startRow, byte[] stopRow, List<GPSBean> records) throws IOException {
+        long start = System.currentTimeMillis();
         HTable table = new HTable(conf, tableName);
         Scan scanner = new Scan();
-        scanner.setCaching(1000);
+        scanner.setCaching(5000);
         scanner.addFamily(Constants.GPSCF);
         scanner.addColumn(Constants.GPSCF, Bytes.toBytes("longitude"));
         scanner.addColumn(Constants.GPSCF, Bytes.toBytes("latitude"));
@@ -362,7 +451,8 @@ public class DataNodeImpl implements IDataNode {
                 }
             }
         }
-        System.out.println("总消费数据是：" + count);
+        long end = System.currentTimeMillis();
+        System.out.println("All consume data` num is " + count + " and elapse " + (end - start));
         resultScanner.close();
         table.close();
         return 0;
@@ -389,7 +479,7 @@ public class DataNodeImpl implements IDataNode {
 
 class GPSBuffer {
     private List<GPSBean> records;
-    private int count;
+    private volatile int count;
     private volatile boolean isFinshed;
 
     public GPSBuffer(List<GPSBean> records) {
@@ -469,13 +559,13 @@ class GPSBean {
     float longitude;
     float latitude;
     long timestamp;
-    int index;
+//    int index;
 
     public GPSBean(String rowKey, float longitude, float latitude, long timestamp) {
         this.rowKey = rowKey;
         this.longitude = longitude;
         this.latitude = latitude;
         this.timestamp = timestamp;
-        this.index = (int )((timestamp - 1456761600) / 3600 % 744);;
+//        this.index = (int )((timestamp - Constants.STARTTIME) / 3600 % Constants.N);
     }
 }

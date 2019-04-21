@@ -23,6 +23,7 @@ public class Utils {
         return Bytes.toBytes(Utils.getDecPrefix(devicesn) + devicesn
                 + Long.toString(Long.MAX_VALUE - time));
     }
+
     public static long getTimeStamp(String dateString) {
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         ts = Timestamp.valueOf(dateString);

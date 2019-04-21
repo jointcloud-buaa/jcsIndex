@@ -6,13 +6,13 @@ import edu.buaa.act.jcsindex.global.peer.info.BoundaryValue;
 import edu.buaa.act.jcsindex.global.peer.info.JcsTuple;
 import edu.buaa.act.jcsindex.global.peer.info.TreeNode;
 import edu.buaa.act.jcsindex.global.peer.management.EventHandleException;
-import edu.buaa.act.jcsindex.global.proto.BroadcastClient;
 import edu.buaa.act.jcsindex.global.protocol.Head;
 import edu.buaa.act.jcsindex.global.protocol.Message;
 import edu.buaa.act.jcsindex.global.protocol.MsgType;
 import edu.buaa.act.jcsindex.global.protocol.body.*;
 
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,8 +54,9 @@ public class SPFindParentListener extends ActionAdapter {
 
             if (treeNode.getContent().satisfyRange(searchedData)) {
                 // 找到了最合适的节点
-                BroadcastClient client = new BroadcastClient(serverpeer.getPhysicalInfo().getIP());
-                List<String> ans = client.broadcastSearch(searchedData.getTimeIndex(), searchedData.getLeftBound(), searchedData.getRightBound());
+//                BroadcastClient client = new BroadcastClient(serverpeer.getPhysicalInfo().getIP());
+//                List<String> ans = client.broadcastSearch(searchedData.getTimeIndex(), searchedData.getLeftBound(), searchedData.getRightBound());
+                List<String> ans = new ArrayList<>();
                 if (treeNode.getParentNode() != null) {
                     body.setLogicalDestination(treeNode.getParentNode().getLogicalInfo());
                     thead.setMsgType(MsgType.SP_SEARCH_PARENT.getValue());

@@ -112,7 +112,7 @@ public class BPlusTree {
      * @throws NumberFormatException is thrown when we have an invalid key value (we only allow >= 0 as keys)
      */
     @SuppressWarnings("unused")
-    public void insertKey(long key, String value, boolean unique)
+    public synchronized void insertKey(long key, String value, boolean unique)
             throws IOException, InvalidBTreeStateException,
             IllegalStateException, NumberFormatException {
 
@@ -1837,9 +1837,9 @@ public class BPlusTree {
 
         // check if we need more than one lookup page
         if (freeSlotPool.size() <= conf.getFirstLookupPageElements()) {
-            System.out.println(" -- We only need a singular page for " +
-                    "overflow values" +
-                    "\n\tInitial page capacity: " + freeSlotPool.size());
+//            System.out.println(" -- We only need a singular page for " +
+//                    "overflow values" +
+//                    "\n\tInitial page capacity: " + freeSlotPool.size());
 
             // reset the pointer and commit it
             // seek to the position we have to start to write
@@ -1942,10 +1942,10 @@ public class BPlusTree {
         }
         // set the length to be max page plus one
         treeFile.setLength(calculatePageOffset(this.maxPageNumber + 1));
-        System.out.println("\n\n -- Conditioning file has been completed! " +
-                "\n\tPurged pages: " + (purged - this.maxPageNumber) +
-                "\n\tNew file size: " + calculatePageOffset(this.maxPageNumber + 1) +
-                " bytes");
+//        System.out.println("\n\n -- Conditioning file has been completed! " +
+//                "\n\tPurged pages: " + (purged - this.maxPageNumber) +
+//                "\n\tNew file size: " + calculatePageOffset(this.maxPageNumber + 1) +
+//                " bytes");
     }
 
     private TreeLookupOverflowNode createOverflowLookupPage(long index, long nextPointer) {
@@ -2180,24 +2180,23 @@ public class BPlusTree {
         treeFile = new RandomAccessFile(path, stmode);
         // check if the file already exists
         if(f.exists() && !mode.contains("+")) {
-            System.out.println("File already exists (size: " + treeFile.length() +
-                    " bytes), trying to read it...");
+//            System.out.println("File already exists (size: " + treeFile.length() + " bytes), trying to read it...");
             // read the header
             conf = readFileHeader(treeFile, true);
             // read the lookup page
             initializeLookupPage(f.exists());
-            System.out.println("File seems to be valid. Loaded OK!");
+//            System.out.println("File seems to be valid. Loaded OK!");
         }
         // if we have to start anew, do so.
         else {
-            System.out.println("Initializing the file...");
-            System.out.println("Tracking I/O performance as well");
+//            System.out.println("Initializing the file...");
+//            System.out.println("Tracking I/O performance as well");
             treeFile.setLength(0);
             conf = opt == null ? new BPlusConfiguration() : opt;
             initializeLookupPage(false);
             createTree();
             writeFileHeader(conf);
-            System.out.println("Done!");
+//            System.out.println("Done!");
         }
     }
 
@@ -2258,9 +2257,9 @@ public class BPlusTree {
                 pindex = lpOvf.getNextPointer();
             }
 
-            System.out.println("-- Parsed " + parsed +
-                    " lookup overflow pages and the initial one, totaling: " +
-                    freeSlotPool.size() + " entries");
+//            System.out.println("-- Parsed " + parsed +
+//                    " lookup overflow pages and the initial one, totaling: " +
+//                    freeSlotPool.size() + " entries");
         }
     }
 

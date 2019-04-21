@@ -2,7 +2,6 @@ package edu.buaa.act.jcsindex;
 
 import edu.buaa.act.jcsindex.global.CmdServer;
 import edu.buaa.act.jcsindex.global.ServerInstance;
-import edu.buaa.act.jcsindex.global.proto.BroadcastServer;
 import edu.buaa.act.jcsindex.local.jcssti.main.LocalInstance;
 
 /**
@@ -26,15 +25,15 @@ public class MainInstance {
             int port = 40000;
             ServerInstance serverInstance = new ServerInstance(port);
             serverInstance.startService(port);
-            new Thread(new BroadcastServer(serverInstance.peer())).start();
             new Thread(new CmdServer(serverInstance.peer())).start();
         } else if ((args.length >= 1) && args[0].equals(startupType[1])) {
             // 启动LocalIndex
             System.out.println("start local index");
             int type = Integer.parseInt(args[1]);
             String serverName = args[2];
+            String ip = args[3];
             try {
-                new LocalInstance().start(type, serverName);
+                new LocalInstance().start(type, serverName, ip);
             } catch (Exception e) {
                 e.printStackTrace();
             }

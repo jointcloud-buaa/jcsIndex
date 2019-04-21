@@ -2,7 +2,6 @@ package edu.buaa.act.jcsindex.global;
 
 import edu.buaa.act.jcsindex.global.peer.PeerType;
 import edu.buaa.act.jcsindex.global.peer.ServerPeer;
-import edu.buaa.act.jcsindex.global.proto.BroadcastServer;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -123,7 +122,6 @@ public class ServerInstance extends AbstractInstance{
         int port = Integer.parseInt(args[0]);
         ServerInstance serverInstance = new ServerInstance(port);
         serverInstance.startService(port);
-        new Thread(new BroadcastServer(serverInstance.peer())).start();
         new Thread(new CmdServer(serverInstance.peer())).start();
     }
 }
