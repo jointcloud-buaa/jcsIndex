@@ -32,7 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by shmin at 2018/7/6 0:04
+ * Created by shimin at 2018/7/6 0:04
  * TODO: 暂时默认为索引文件已经构建好，直接获取；后期需要加入创建索引的命令
  **/
 public class DataNodeImpl implements IDataNode {
@@ -140,6 +140,7 @@ public class DataNodeImpl implements IDataNode {
                 // TODO: 后缀是bin,改成db更合适
                 indexs[i] = new BPlusTree(bconf, recreateTree ? "rw+" : "rw", dbPath + "/" + "tree" + i + ".bin", bPerf);
             }
+            indexSummary = new IndexSummary(indexs, ip);
         } catch (Exception e) {
             throw new RuntimeException("索引初始化失败", e);
         }
@@ -226,6 +227,9 @@ public class DataNodeImpl implements IDataNode {
                     int gridId = ZOrder.getZOrderStr(i, j);
                     SearchResult sr = indexs[time].searchKey(gridId, true);
                     if (sr.getValues() != null) {
+                        if (sr.getValues().size() > 1) {
+                            System.out.println(sr.getValues().size());
+                        }
                         sub.addAll(sr.getValues());
                     }
                 }
@@ -282,9 +286,6 @@ public class DataNodeImpl implements IDataNode {
             // split region to two half, then insert
             String startKey = new String(regionInfos.get(index).getStartKey());
             String endKey = new String(regionInfos.get(index).getEndKey());
-            System.out.println(startKey);
-            System.out.println(endKey);
-            System.out.println("++++++++++++++++");
             if (startKey.length() == 0) {
                 BigInteger midKeyBig = new BigInteger(endKey).divide(new BigInteger("2"));
                 String midKey= midKeyBig.toString();
@@ -295,13 +296,10 @@ public class DataNodeImpl implements IDataNode {
                         break;
                     }
                 }
-                System.out.println(startKey);
-                System.out.println(midKey);
-                System.out.println(endKey);
-                System.out.println(startKey.length() + " " + midKey.length() + " " + endKey.length());
+                realInsert(regionInfos.get(ix).getStartKey(), midKey.getBytes());
+                realInsert(midKey.getBytes(), regionInfos.get(ix).getEndKey());
             } else if (endKey.length() == 0) {
-                // realInsert(regionInfos.get(index).getStartKey(), regionInfos.get(index).getEndKey());
-                System.out.println("no midkey");
+                realInsert(regionInfos.get(index).getStartKey(), regionInfos.get(index).getEndKey());
             } else {
                 int prefix = 0;
                 if (startKey.charAt(0) == '0' && endKey.charAt(0) == '0') {
@@ -331,25 +329,23 @@ public class DataNodeImpl implements IDataNode {
                     for (int i = 0; i < prefix; i++) {
                         midKey = "0" + midKey;
                     }
-                    System.out.println(startKey);
-                    System.out.println(midKey);
-                    System.out.println(endKey);
-                    System.out.println(startKey.length() + " " + midKey.length() + " " + endKey.length());
+                    realInsert(regionInfos.get(ix).getStartKey(), midKey.getBytes());
+                    realInsert(midKey.getBytes(), regionInfos.get(ix).getEndKey());
                 } else {
                     // 二者长度相等，正好
                     midKey = new BigInteger(startKey).add(new BigInteger(endKey)).divide(new BigInteger("2")).toString();
                     for (int i = 0; i < prefix; i++) {
                         midKey = "0" + midKey;
                     }
-                    System.out.println(startKey);
-                    System.out.println(midKey);
-                    System.out.println(endKey);
-                    System.out.println(startKey.length() + " " + midKey.length() + " " + endKey.length());
+                    realInsert(regionInfos.get(ix).getStartKey(), midKey.getBytes());
+                    realInsert(midKey.getBytes(), regionInfos.get(ix).getEndKey());
                 }
             }
+            long now = System.currentTimeMillis();
+            System.out.println("Data inserting, elapsed: " + (now - start) + "ms");
         }
         long end = System.currentTimeMillis();
-        System.out.println("Data insertion completed, elapsed " + (end - start) + " s");
+        System.out.println("Data insertion completed, elapsed " + (end - start) + " ms");
     }
 
     private void realInsert(byte[] startKey, byte[] endKey) {
@@ -401,6 +397,8 @@ public class DataNodeImpl implements IDataNode {
                             int index = (int )((gpsBean.timestamp - Constants.STARTTIME) / 3600 % Constants.N);
                             int gridId = ZOrder.getZOrderStr(gridInstance.getX(gpsBean.longitude), gridInstance.getY(gpsBean.latitude));
                             try {
+                                // TODO: 坑的一点是，unique为true，表示Key相同，不插入
+                                // 基于两点原因改为true: 1是插入效率太慢了，为了保证能做实验；2. 生成文件体积太大，我自己都有点怀疑数据的真实性了
                                 indexs[index].insertKey(gridId, gpsBean.rowKey, true);
                                 count.incrementAndGet();
                             } catch (Exception ex) {
@@ -427,7 +425,7 @@ public class DataNodeImpl implements IDataNode {
         long start = System.currentTimeMillis();
         HTable table = new HTable(conf, tableName);
         Scan scanner = new Scan();
-        scanner.setCaching(5000);
+        scanner.setCaching(1000);
         scanner.addFamily(Constants.GPSCF);
         scanner.addColumn(Constants.GPSCF, Bytes.toBytes("longitude"));
         scanner.addColumn(Constants.GPSCF, Bytes.toBytes("latitude"));

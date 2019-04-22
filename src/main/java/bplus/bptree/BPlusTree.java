@@ -2460,7 +2460,7 @@ public class BPlusTree {
     public boolean findRange(RangePosition rp) {
         if (rp.level == -1) {
             rp.left = 0;
-            rp.right = Integer.MAX_VALUE;
+            rp.right = 1047615;
             return true;
         } else {
             return findRange(root, rp, 0);
@@ -2513,7 +2513,7 @@ public class BPlusTree {
     public List<RangePosition> expandRange(RangePosition rp) {
         if (rp.level == -1) {
             RangePosition sub = new RangePosition(0);
-            sub.left = 0L; sub.right = Long.MAX_VALUE;
+            sub.left = 0L; sub.right = 1047615;
             return Arrays.asList(new RangePosition[]{sub});
         } else {
             return expandRange(root, rp, 0);
@@ -2547,7 +2547,7 @@ public class BPlusTree {
                 }
                 List<Integer> indexs = new ArrayList<>(rp.indexs);
                 indexs.add(n.keyArray.size());
-                res.add(new RangePosition(rp.level + 1, indexs, left, Long.MAX_VALUE));
+                res.add(new RangePosition(rp.level + 1, indexs, left, 1047615));
                 return res;
             } else {
                 int i = rp.indexs.get(ind);
@@ -2559,6 +2559,102 @@ public class BPlusTree {
                     ex.printStackTrace();
                     return null;
                 }
+            }
+        }
+    }
+
+    public long getMinRange(RangePosition rp) {
+        if (rp.level == -1) {
+            return 0L;
+        } else {
+            return getMinRange(root, rp, 0);
+        }
+    }
+
+    public long getMinRange(TreeNode root, RangePosition rp, int ind) {
+        if (root.isLeaf()) {
+            // 直接到叶子层次了，所以
+            return root.keyArray.get(0);
+        } else {
+            // 中间结点
+            if (ind > rp.level) {
+                throw new UnsupportedOperationException("Cant` happen");
+            } else if (ind == rp.level) {
+                return getRealMinRange(root);
+            } else {
+                int i = rp.indexs.get(ind);
+                TreeInternalNode internalNode = (TreeInternalNode ) root;
+                try {
+                    TreeNode child = readNode(internalNode.getPointerAt(i));
+                    return getMinRange(child, rp, ind + 1);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    throw new UnsupportedOperationException("Can`t happen");
+                }
+            }
+        }
+    }
+
+    private long getRealMinRange(TreeNode root) {
+        if (root.isLeaf()) {
+            return root.keyArray.get(0);
+        } else {
+            TreeInternalNode internalNode = (TreeInternalNode) root;
+            try {
+                TreeNode child = readNode(internalNode.getPointerAt(0));
+                return getRealMinRange(child);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return -1;
+            }
+        }
+    }
+
+
+    public long getMaxRange(RangePosition rp) {
+        if (rp.level == -1) {
+            return 1047615L;
+        } else {
+            return getMaxRange(root, rp, 0);
+        }
+    }
+
+    public long getMaxRange(TreeNode root, RangePosition rp, int ind) {
+        if (root.isLeaf()) {
+            // 到叶子层次了
+            return root.keyArray.getLast();
+        } else {
+            // 中间结点
+            if (ind > rp.level) {
+                throw new UnsupportedOperationException("Cant` happen");
+            } else if (ind == rp.level) {
+                return getRealMaxRange(root);
+            } else {
+                int i = rp.indexs.get(ind);
+                TreeInternalNode internalNode = (TreeInternalNode ) root;
+                try {
+                    TreeNode child = readNode(internalNode.getPointerAt(i));
+                    return getMaxRange(child, rp, ind + 1);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    throw new UnsupportedOperationException("Can`t happen");
+                }
+            }
+        }
+    }
+
+    private long getRealMaxRange(TreeNode root) {
+        if (root.isLeaf()) {
+            return root.keyArray.getLast();
+        } else {
+            TreeInternalNode internalNode = (TreeInternalNode) root;
+            try {
+                int index = internalNode.keyArray.size();
+                TreeNode child = readNode(internalNode.getPointerAt(index));
+                return getRealMinRange(child);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return -1;
             }
         }
     }

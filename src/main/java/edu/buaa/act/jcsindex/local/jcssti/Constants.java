@@ -17,20 +17,21 @@ public class Constants {
     // RMI port
     public static final int NODE_PORT = 9090;
 
-    // 在window本地执行
-//    public static final String DB_PATH = "D:\\workspace\\jointcloudstorage\\localIndex\\BPlusTree\\DB";
 
     // 测试集，只有3月份的数据
-//    public static final int N = 744;
-//    public static final Long STARTTIME = 1456761600L;
+    public static final int N = 744;
+    public static final Long STARTTIME = 1456761600L;
+    // 在window本地执行
+    public static final String DB_PATH = "D:\\workspace\\jointcloudstorage\\localIndex\\BPlusTree\\DB";
+    // 在远端服务器执行
 //    public static final String DB_PATH = "/storage/shimin/localindextest/";
-//    public static final String HBASE_TABLE_NAME = "carstest";
+    public static final String HBASE_TABLE_NAME = "carstest";
 
     // 完整数据，有2016一整年的数据
-    public static final int N = 8784;
-    public static final long STARTTIME = 1451577600L;
-    public static final String DB_PATH = "/storage/shimin/localindex/";
-    public static final String HBASE_TABLE_NAME = "trustcars";
+//    public static final int N = 8784;
+//    public static final long STARTTIME = 1451577600L;
+//    public static final String DB_PATH = "/storage/shimin/localindex/";
+//    public static final String HBASE_TABLE_NAME = "trustcars";
 
     public static final float MIN_LONGTITUDE = 115.542991693034F;
     public static final float MAX_LONGTITUDE = 116.848701941655F;

@@ -10,12 +10,13 @@ public class RangePosition implements Comparable<RangePosition> {
     public int level;
     public List<Integer> indexs;
     public long left, right;
+    public long min, max;
     private int all, hit;
 
     public RangePosition() {
         this.level = 0;
         this.left = 0L;
-        this.right = Long.MAX_VALUE;
+        this.right = 1047615;
         this.indexs = new ArrayList<>();
         this.all = this.hit = 0;
     }

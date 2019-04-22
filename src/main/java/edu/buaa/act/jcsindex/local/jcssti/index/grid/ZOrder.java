@@ -60,7 +60,7 @@ public class ZOrder {
             }
             System.out.println();
         }
-        System.out.println(getZOrderStr(99, 99));
+        System.out.println(getZOrderStr(999, 999));
     }
 }
 

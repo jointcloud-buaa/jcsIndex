@@ -2,6 +2,8 @@ package edu.buaa.act.jcsindex.local.jcssti.main;
 
 import edu.buaa.act.jcsindex.local.jcssti.index.node.DataNodeImpl;
 import edu.buaa.act.jcsindex.local.bean.ParaGPSRecord;
+import edu.buaa.act.jcsindex.local.jcssti.index.node.rmi.DataNodeSkeleton;
+import org.apache.hadoop.hdfs.server.datanode.DataNode;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -12,10 +14,12 @@ import java.util.Scanner;
  **/
 public class CMDServer implements Runnable{
     private DataNodeImpl dataNode;
-    private boolean isRunning;
+    private DataNodeSkeleton skeleton;
+    private volatile boolean isRunning;
 
-    public CMDServer(DataNodeImpl dataNode) {
+    public CMDServer(DataNodeImpl dataNode, DataNodeSkeleton skeleton) {
         this.dataNode = dataNode;
+        this.skeleton = skeleton;
         this.isRunning = true;
     }
 
@@ -38,6 +42,7 @@ public class CMDServer implements Runnable{
         final String QUIT_CMD = "quit";
         final String TEST_CMD = "test";
         final String RANGE_CMD = "range";
+        final String PUBLISH_CMD = "publish";
         final String MEMORY_CMD = "memory";
 
         Scanner sc = new Scanner(System.in);
@@ -74,8 +79,11 @@ public class CMDServer implements Runnable{
                                 memoryUsed / (1024 * 1024.0));
                     } else if (args[0].equals(RANGE_CMD)) {
                         // TODO: 待添加真正的逻辑
+                    } else if (args[0].equals(PUBLISH_CMD)) {
+                        dataNode.publishRange();
                     } else if (args[0].equals(QUIT_CMD)) {
                         dataNode.exit();
+//                        skeleton.exit();
                         isRunning = false;
                     } else if (args[0].equals(HELP_CMD)) {
                         System.out.println(HELP_MSG);

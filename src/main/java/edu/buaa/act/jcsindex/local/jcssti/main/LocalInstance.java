@@ -7,6 +7,7 @@ import edu.buaa.act.jcsindex.local.jcssti.index.grid.Grid;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 
+import javax.xml.crypto.Data;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -40,21 +41,22 @@ public class LocalInstance {
 
 
         // 初始化Sketlon线程并启动
-        new Thread(new DataNodeSkeleton(dataNode, ip, Constants.NODE_PORT)).start();
+        DataNodeSkeleton skeleton = new DataNodeSkeleton(dataNode, ip, Constants.NODE_PORT);
+        new Thread(skeleton).start();
 
         // 初始化CMDServer线程并启动
-        new Thread(new CMDServer(dataNode)).start();
+        new Thread(new CMDServer(dataNode, skeleton)).start();
     }
 
     public static void main(String[] args) throws Exception{
-        // new LocalInstance().start(1, "test55", "192.168.7.55");
-        BigInteger l = new BigInteger("0");
-        BigInteger r = new BigInteger("0286319677901368209223372035402814804");
-        BigInteger ans = l.add(r);
-        System.out.println(ans.toString());
-        BigInteger divider = new BigInteger("2");
-        ans = ans.divide(divider);
-        System.out.println(ans.toString());
+        new LocalInstance().start(1, "test55", "127.0.0.1");
+//        BigInteger l = new BigInteger("0");
+//        BigInteger r = new BigInteger("0286319677901368209223372035402814804");
+//        BigInteger ans = l.add(r);
+//        System.out.println(ans.toString());
+//        BigInteger divider = new BigInteger("2");
+//        ans = ans.divide(divider);
+//        System.out.println(ans.toString());
     }
 
     private static Configuration getConfiguration(int type) {

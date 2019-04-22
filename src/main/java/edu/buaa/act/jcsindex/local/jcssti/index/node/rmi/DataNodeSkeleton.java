@@ -25,6 +25,7 @@ public class DataNodeSkeleton extends UnicastRemoteObject implements IOperator, 
     private final String nodeHost;
     private final int nodePort;
     private final String serverName;
+    private Registry registry;
 
     public DataNodeSkeleton(final DataNodeImpl dataNode, final String nodeHost, int nodePort) throws RemoteException {
         this.dataNode = dataNode;
@@ -36,7 +37,7 @@ public class DataNodeSkeleton extends UnicastRemoteObject implements IOperator, 
     @Override
     public void run() {
         try {
-            LocateRegistry.createRegistry(nodePort);
+            registry = LocateRegistry.createRegistry(nodePort);
             Naming.bind(serverName, this);
             System.out.println("DataNode" + " listen on " + nodeHost + ":" + nodePort);
         } catch (Exception ex) {
@@ -81,9 +82,8 @@ public class DataNodeSkeleton extends UnicastRemoteObject implements IOperator, 
      */
     public void exit() {
         try {
-            Registry registry = LocateRegistry.getRegistry();
             registry.unbind(serverName);
-            UnicastRemoteObject.unexportObject(this,false);
+            UnicastRemoteObject.unexportObject(registry,true);
         } catch (Exception e) {
             e.printStackTrace();
         }
