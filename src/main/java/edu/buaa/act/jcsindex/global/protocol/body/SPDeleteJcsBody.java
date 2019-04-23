@@ -6,14 +6,11 @@ import edu.buaa.act.jcsindex.global.peer.info.PhysicalInfo;
 
 import java.io.Serializable;
 
-/**
- * Created by shimin at 4/10/2019 10:30 PM
- **/
-public class SPPublishBody extends Body implements Serializable
+public class SPDeleteJcsBody extends Body implements Serializable
 {
 
     // private members
-    private static final long serialVersionUID = 8563152697562874898L;
+    private static final long serialVersionUID = 8563152697562774898L;
 
     private PhysicalInfo physicalSender;
     private LogicalInfo logicalSender;
@@ -28,8 +25,8 @@ public class SPPublishBody extends Body implements Serializable
      * @param tuple tuple item wanted to insert
      * @param logicalDestination logical address of the receiver
      */
-    public SPPublishBody(PhysicalInfo physicalSender, LogicalInfo logicalSender,
-                        JcsTuple tuple, LogicalInfo logicalDestination)
+    public SPDeleteJcsBody(PhysicalInfo physicalSender, LogicalInfo logicalSender,
+                         JcsTuple tuple, LogicalInfo logicalDestination)
     {
         this.physicalSender = physicalSender;
         this.logicalSender = logicalSender;

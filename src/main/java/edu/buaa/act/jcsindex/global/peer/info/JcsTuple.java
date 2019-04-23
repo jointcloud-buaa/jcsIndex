@@ -37,6 +37,17 @@ public class JcsTuple implements Comparable, Serializable {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof JcsTuple) {
+            JcsTuple that = (JcsTuple) obj;
+            if (that.timeIndex == this.timeIndex && that.leftBound == this.leftBound && that.rightBound == this.rightBound && that.dest == this.dest) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public int getTimeIndex() {
         return timeIndex;
     }

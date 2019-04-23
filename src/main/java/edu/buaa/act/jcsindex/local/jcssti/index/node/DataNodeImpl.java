@@ -146,7 +146,7 @@ public class DataNodeImpl implements IDataNode {
                 for (int i = x1; i < x2; i++) {
                     for (int j = y1; j < y2; j++) {
                         int gridId = ZOrder.getZOrderStr(i, j);
-                        // if (indexSummary.contains(time, gridId)) continue;
+                        if (!indexSummary.contains(time, gridId)) continue;
                         SearchResult sr = indexs[time].searchKey(gridId, true);
                         if (sr.getValues() != null) {
                             sub.addAll(sr.getValues());

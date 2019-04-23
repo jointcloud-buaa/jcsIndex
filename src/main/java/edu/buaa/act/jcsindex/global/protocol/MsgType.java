@@ -555,6 +555,8 @@ public enum MsgType
 	SP_SEARCH_PARENT						(superpeer_to_superpeer.key + 65),
 	SP_PARALLEL_SEARCH_RESULT				(superpeer_to_superpeer.key + 66),
 	SP_UPDATE_SUBTREE_RANGE                 (superpeer_to_superpeer.key + 67),
+	SP_DELETE_JCS                           (superpeer_to_superpeer.key + 68),
+	SP_DELETE_PARENT                        (superpeer_to_superpeer.key + 69),
 	
 	/* define CA MESSAGE BELLOW */
 	cert_authority							(common.key + 600),
@@ -1211,6 +1213,10 @@ public enum MsgType
 			result = "PARALLEL SEARCH RESULT";
 		} else if (MsgType.SP_UPDATE_SUBTREE_RANGE.getValue() == msgType) {
 			result = "SP UPDATE SUBTREE RANGE";
+		} else if (MsgType.SP_DELETE_JCS.getValue() == msgType) {
+			result = "SP DELETE JCS";
+		} else if (MsgType.SP_DELETE_PARENT.getValue() == msgType) {
+			result = "SP DELETE PARENT";
 		}
 		// -------------- FOR CERTICATE AUTHORITY --------------
 		else if (MsgType.CA_GET_CERT.getValue() == msgType)

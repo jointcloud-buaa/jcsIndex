@@ -380,6 +380,17 @@ public class ContentInfo implements Serializable
 		return ans;
 	}
 
+	public void deleteJcs(JcsTuple tuple) {
+		int timeIndex = tuple.getTimeIndex();
+		Vector<JcsTuple> arr = jcsData.get(timeIndex);
+		for (int i = 0; i < arr.size(); i++) {
+			if (tuple.equals(arr.get(i))) {
+				arr.remove(i);
+				return;
+			}
+		}
+	}
+
 
 	/**
 	 * Delete an index key from the key set.
