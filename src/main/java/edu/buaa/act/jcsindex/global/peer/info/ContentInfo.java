@@ -9,6 +9,7 @@ package edu.buaa.act.jcsindex.global.peer.info;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implement the index key set of each node in the BATON tree.
@@ -56,12 +57,12 @@ public class ContentInfo implements Serializable
 	private Vector<IndexValue> data;
 
 	// TODO: 增加一个Map用来存jcsindex的数据，后续可以在此基础上改进
-	private Map<Integer, Vector<JcsTuple>> jcsData = new HashMap<>();
+	private ConcurrentHashMap<Integer, Vector<JcsTuple>> jcsData = new ConcurrentHashMap<>();
 
 	// TODO：增加一个属性表示是否有必要向上搜索
 	// 按照我的理解，只需要记录从该节点走的数据的rightBound即可(不一定很有效率)
-	private Map<Integer, Long> tagLeftSets = new HashMap<>();
-	private Map<Integer, Long> tagRightSets = new HashMap<>();
+	private ConcurrentHashMap<Integer, Long> tagLeftSets = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<Integer, Long> tagRightSets = new ConcurrentHashMap<>();
 
 	/**
 	 * Contruct the set of the index keys at each super node.
@@ -83,6 +84,10 @@ public class ContentInfo implements Serializable
 	    // TODO: 设置默认值
 		this.subtreeRangeL = new BoundaryValue(minValue);
 		this.subtreeRangeR = new BoundaryValue(maxValue);
+
+		for (int i = 0; i < 8784; i++) {
+			jcsData.put(i, new Vector<>());
+		}
 	}
 
 	// TODO：子树范围一般在节点加入时就已经固定了，因此可以在构造函数中直接生成
@@ -354,6 +359,7 @@ public class ContentInfo implements Serializable
 				i++;
 			}
 		} else if (arr == null) {
+			// 变成ConcurrentHashMap, 优先初始化后，理论上不会执行这一行
 			jcsData.put(sentinelValue.getTimeIndex(), new Vector<>());
 			arr = jcsData.get(sentinelValue.getTimeIndex());
 		}
