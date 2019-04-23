@@ -258,6 +258,7 @@ public class DataNodeImpl implements IDataNode {
                 gpsRecord.setLatitude((float )Bytes.toDouble(results[i].getValue(Constants.GPSCF, Constants.GPSCF_LATITUDE)));
                 gpsRecord.setDevicesn(Long.parseLong(Bytes.toString(results[i].getValue(Constants.GPSCF, Constants.GPSCF_DEVICESN))));
                 gpsRecord.setGpstime(Bytes.toLong(results[i].getValue(Constants.GPSCF, Constants.GPSCF_TIMESTAMP)));
+                gpsRecord.setClusterid(clusterID);
                 res.add(gpsRecord);
             }
         } catch (Exception e) {
