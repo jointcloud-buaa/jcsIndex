@@ -2524,12 +2524,14 @@ public class BPlusTree {
         if (n.isLeaf()) {
             // 叶子结点(最好不要拓展到叶子结点)
             if (ind != rp.level) {
-                return null;
+                // 异常情况，不给数据
+                return new ArrayList<>();
             } else {
-                int i = rp.indexs.get(ind);
-                RangePosition sub = new RangePosition(rp.level + 1);
-                sub.left = n.keyArray.get(i);
-                sub.right = rp.left;
+                // 特殊情况，只能发布到这一层
+                RangePosition sub = new RangePosition(rp.level );
+                sub.indexs = rp.indexs;
+                sub.left = n.keyArray.getFirst();
+                sub.right = n.keyArray.getLast();
                 return Arrays.asList(new RangePosition[]{sub});
             }
         } else {

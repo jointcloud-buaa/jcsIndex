@@ -47,6 +47,7 @@ public class IndexSummary implements Runnable{
                 // System.out.println("(" + rp.left + ", " + rp.right + ") " + "(" + rp.min + ", " + rp.max + ")");
                 count++;
             }
+            summary.put(i, treeSet);
             System.out.println("Every timeIndex: " + rps.size());
         }
         System.out.println("all count: " + count);
@@ -60,7 +61,7 @@ public class IndexSummary implements Runnable{
             head.setMsgType(MsgType.SP_PUBLISH.getValue());
 
             Body body = new SPPublishBody(
-                    new PhysicalInfo(ip),
+                    new PhysicalInfo(ip, 40000),
                     null,
                     new JcsTuple(timeIndex, rp.min, rp.max, ip),
                     null
