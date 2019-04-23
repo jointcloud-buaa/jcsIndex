@@ -17,6 +17,7 @@ public class SPFindParentBody extends Body implements Serializable {
     private LogicalInfo logicalSender;
     private PhysicalInfo physicalRequester;
     private LogicalInfo logicalRequester;
+    private String requestId;
     // TODO: 只能对应一个时段的Search
     private JcsTuple tuple;
     private LogicalInfo  logicalDestination;
@@ -40,11 +41,24 @@ public class SPFindParentBody extends Body implements Serializable {
         this.logicalDestination = logicalDestination;
     }
 
+    public SPFindParentBody(PhysicalInfo physicalSender, LogicalInfo logicalSender, PhysicalInfo physicalRequester, LogicalInfo logicalRequester, String requestId,
+                            JcsTuple tuple, LogicalInfo logicalDestination)
+    {
+        this.physicalSender = physicalSender;
+        this.logicalSender = logicalSender;
+        this.physicalRequester = physicalRequester;
+        this.logicalRequester = logicalRequester;
+        this.requestId = requestId;
+        this.tuple = tuple;
+        this.logicalDestination = logicalDestination;
+    }
+
     public SPFindParentBody(SPParallelSearchBody body) {
         this.physicalSender = body.getPhysicalSender();
         this.logicalSender = body.getLogicalSender();
         this.physicalRequester = body.getPhysicalRequester();
         this.logicalRequester = body.getLogicalRequester();
+        this.requestId = body.getRequestId();
         this.tuple = body.getTuple();
         this.logicalDestination = body.getLogicalDestination();
     }

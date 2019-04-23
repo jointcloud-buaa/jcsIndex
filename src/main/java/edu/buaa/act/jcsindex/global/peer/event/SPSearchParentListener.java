@@ -73,7 +73,7 @@ public class SPSearchParentListener extends ActionAdapter {
             } else {
                 // 从这里直接返回结果
                 thead.setMsgType(MsgType.SP_PARALLEL_SEARCH_RESULT.getValue());
-                SPParallelSearchResultBody tbody = new SPParallelSearchResultBody(body.getPhysicalSender(), body.getLogicalSender(), fdests, null);
+                SPParallelSearchResultBody tbody = new SPParallelSearchResultBody(body.getPhysicalSender(), body.getLogicalSender(), body.getRequestId(), fdests, null);
                 result = new Message(thead, tbody);
                 serverpeer.sendMessage(body.getPhysicalRequester(), result);
             }

@@ -332,7 +332,7 @@ public class ContentInfo implements Serializable
 
 	public boolean satisfyRange(JcsTuple tupleValue) {
 		//　TODO: just for test
-		System.out.println("L: " + subtreeRangeL.getLongValue() + " R: " + subtreeRangeR.getLongValue() + " tuple: " + tupleValue.toString());
+		// System.out.println("L: " + subtreeRangeL.getLongValue() + " R: " + subtreeRangeR.getLongValue() + " tuple: " + tupleValue.toString());
 		return subtreeRangeL.getLongValue() <= tupleValue.getLeftBound() &&  tupleValue.getRightBound() <= subtreeRangeR.getLongValue();
 	}
 
@@ -340,7 +340,6 @@ public class ContentInfo implements Serializable
 	public void insertJcsTuple(JcsTuple tupleValue)
 	{
 		// TODO: 输出语句，便于调试
-		System.out.println("执行了insertJcsTuple");
 		JcsTuple temptValue, sentinelValue;
 		sentinelValue = tupleValue;
 		Vector arr = this.jcsData.get(sentinelValue.getTimeIndex());

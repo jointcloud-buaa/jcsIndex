@@ -16,6 +16,7 @@ public class SPParallelSearchResultBody extends Body implements Serializable {
 
     private PhysicalInfo physicalSender;
     private LogicalInfo logicalSender;
+    private String requestId;
     private List<String> dests;
     private LogicalInfo  logicalDestination;
 
@@ -34,6 +35,24 @@ public class SPParallelSearchResultBody extends Body implements Serializable {
         this.logicalSender = logicalSender;
         this.dests = dests;
         this.logicalDestination = logicalDestination;
+    }
+
+    public SPParallelSearchResultBody(PhysicalInfo physicalSender, LogicalInfo logicalSender, String requestId,
+                                      List<String> dests, LogicalInfo logicalDestination)
+    {
+        this.physicalSender = physicalSender;
+        this.logicalSender = logicalSender;
+        this.requestId = requestId;
+        this.dests = dests;
+        this.logicalDestination = logicalDestination;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     public List<String> getDests() {

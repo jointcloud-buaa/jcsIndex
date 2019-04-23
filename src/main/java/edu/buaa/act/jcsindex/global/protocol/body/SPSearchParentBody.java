@@ -18,6 +18,7 @@ public class SPSearchParentBody extends Body implements Serializable {
     private LogicalInfo logicalSender;
     private PhysicalInfo physicalRequester;
     private LogicalInfo logicalRequester;
+    private String requestId;
     // TODO: 只能对应一个时段的Search
     private JcsTuple tuple;
     private List<String> dests;
@@ -43,13 +44,35 @@ public class SPSearchParentBody extends Body implements Serializable {
         this.logicalDestination = logicalDestination;
     }
 
+    public SPSearchParentBody(PhysicalInfo physicalSender, LogicalInfo logicalSender, PhysicalInfo physicalRequester, LogicalInfo logicalRequester, String requestId,
+                              JcsTuple tuple, List<String> dests, LogicalInfo logicalDestination)
+    {
+        this.physicalSender = physicalSender;
+        this.logicalSender = logicalSender;
+        this.physicalRequester = physicalRequester;
+        this.logicalRequester = logicalRequester;
+        this.requestId = requestId;
+        this.tuple = tuple;
+        this.dests = dests;
+        this.logicalDestination = logicalDestination;
+    }
+
     public SPSearchParentBody(SPParallelSearchBody body) {
         this.physicalSender = body.getPhysicalSender();
         this.logicalSender = body.getLogicalSender();
         this.physicalRequester = body.getPhysicalRequester();
         this.logicalRequester = body.getLogicalRequester();
+        this.requestId = body.getRequestId();
         this.tuple = body.getTuple();
         this.logicalDestination = body.getLogicalDestination();
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     public List<String> getDests() {

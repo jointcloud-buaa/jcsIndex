@@ -58,7 +58,7 @@ public class SPPublishParentListener extends ActionAdapter{
             } else {
                 // 更新本节点的tagValue
                 treeNode.getContent().setTagLeftSets(insertedData);
-                // 向父节点发送PUBLISH消息
+                // 向父节点发送PUBLISH_PARENT消息
                 body.setLogicalDestination(treeNode.getParentNode().getLogicalInfo());
                 head.setMsgType(MsgType.SP_PUBLISH_PARENT.getValue());
                 result = new Message(head, body);

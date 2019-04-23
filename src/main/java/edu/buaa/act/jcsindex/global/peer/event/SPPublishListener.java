@@ -51,11 +51,9 @@ public class SPPublishListener extends ActionAdapter
 
             if ((insertedData.compareTo(minValue) >= 0) && (insertedData.compareTo(maxValue) < 0))
             {
-                System.out.println("Publish: 查询到第一层 " + treeNode.getLogicalInfo());
                 // TODO: 插入tuple(time, leftbound, rightbound, ip)，待修改成真正的publisher
                 // 只有符合要求才在该处插入，否则传递给父节点
                 if (treeNode.getContent().satisfyRange(insertedData)) {
-                    System.out.println("insertJcsTuple: 执行 on " + treeNode.getLogicalInfo());
                     treeNode.getContent().insertJcsTuple(insertedData);
                     // 更新右孩子的tagValue
                     if (treeNode.getRightChild() != null) {
