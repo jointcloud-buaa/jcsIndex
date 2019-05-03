@@ -509,9 +509,11 @@ public class ContentInfo implements Serializable
 	public String formatTupleString() {
 		String outMsg = "";
 		for (Map.Entry<Integer, Vector<JcsTuple>> entry : jcsData.entrySet()) {
-			outMsg += "TimeIndex: " + entry.getKey() + "\n";
-			for (JcsTuple tuple : entry.getValue()) {
-				outMsg += tuple.toString() + "\n";
+			if (entry.getValue().size() != 0) {
+				outMsg += "TimeIndex: " + entry.getKey() + "\n";
+				for (JcsTuple tuple : entry.getValue()) {
+					outMsg += tuple.toString() + "\n";
+				}
 			}
 		}
 		return outMsg;

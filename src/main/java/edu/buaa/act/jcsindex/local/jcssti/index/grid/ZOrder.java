@@ -1,9 +1,6 @@
 package edu.buaa.act.jcsindex.local.jcssti.index.grid;
 
 /**
- * Created by shmin at 2018/7/5 23:46
- **/
-/**
  * Created by shmin at 2018/5/25 7:28
  **/
 public class ZOrder {
@@ -60,7 +57,7 @@ public class ZOrder {
             }
             System.out.println();
         }
-        System.out.println(getZOrderStr(99, 99));
+        System.out.println(getZOrderStr(999, 999));
     }
 }
 

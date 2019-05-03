@@ -67,6 +67,16 @@ public class SPSearchParentBody extends Body implements Serializable {
         this.logicalDestination = body.getLogicalDestination();
     }
 
+    public SPSearchParentBody(SPFindParentBody body) {
+        this.physicalSender = body.getPhysicalSender();
+        this.logicalSender = body.getLogicalSender();
+        this.physicalRequester = body.getPhysicalRequester();
+        this.logicalRequester = body.getLogicalRequester();
+        this.requestId = body.getRequestId();
+        this.tuple = body.getTuple();
+        this.logicalDestination = body.getLogicalDestination();
+    }
+
     public String getRequestId() {
         return requestId;
     }

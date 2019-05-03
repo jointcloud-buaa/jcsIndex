@@ -39,7 +39,7 @@ public class SPFindParentListener extends ActionAdapter {
             ServerPeer serverpeer = (ServerPeer) instance.peer();
 
             /* get the message body */
-            SPParallelSearchBody body = (SPParallelSearchBody) msg.getBody();
+            SPFindParentBody body = (SPFindParentBody) msg.getBody();
 
             TreeNode treeNode = serverpeer.getTreeNode(body.getLogicalDestination());
             if (treeNode == null)

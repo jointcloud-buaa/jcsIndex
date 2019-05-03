@@ -6,6 +6,8 @@ import java.io.Serializable;
  * Created by shimin at 4/10/2019 10:19 PM
  **/
 public class JcsTuple implements Comparable, Serializable {
+    private static final long serialVersionUID = 8358627612268617718L;
+
     // 对应的time index
     private int timeIndex;
     // 左届

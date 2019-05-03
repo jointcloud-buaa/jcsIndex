@@ -63,6 +63,18 @@ public class SPFindParentBody extends Body implements Serializable {
         this.logicalDestination = body.getLogicalDestination();
     }
 
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public void setTuple(JcsTuple tuple) {
+        this.tuple = tuple;
+    }
+
     public PhysicalInfo getPhysicalRequester() {
         return physicalRequester;
     }
