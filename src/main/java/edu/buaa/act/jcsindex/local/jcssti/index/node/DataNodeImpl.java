@@ -285,63 +285,65 @@ public class DataNodeImpl implements IDataNode {
             final int index = ix;
 
             // split region to two half, then insert
-            String startKey = new String(regionInfos.get(index).getStartKey());
-            String endKey = new String(regionInfos.get(index).getEndKey());
-            if (startKey.length() == 0) {
-                BigInteger midKeyBig = new BigInteger(endKey).divide(new BigInteger("2"));
-                String midKey= midKeyBig.toString();
-                for (int i = 0; i < endKey.length(); i++) {
-                    if (endKey.charAt(i) == '0') {
-                        midKey = '0' + midKey;
-                    } else {
-                        break;
-                    }
-                }
-                realInsert(regionInfos.get(ix).getStartKey(), midKey.getBytes());
-                realInsert(midKey.getBytes(), regionInfos.get(ix).getEndKey());
-            } else if (endKey.length() == 0) {
-                realInsert(regionInfos.get(index).getStartKey(), regionInfos.get(index).getEndKey());
-            } else {
-                int prefix = 0;
-                if (startKey.charAt(0) == '0' && endKey.charAt(0) == '0') {
-                    for (int i = 0; i < startKey.length(); i++) {
-                        if (startKey.charAt(i) == '0' && endKey.charAt(0) == '0') {
-                            prefix++;
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                String midKey = "";
-                if (startKey.length() != endKey.length()) {
-                    if (startKey.length() < endKey.length()) {
-                        int len = endKey.length() - startKey.length();
-                        for (int i = 0; i < len; i++) {
-                            startKey = startKey + "0";
-                        }
-                        midKey = new BigInteger(startKey).add(new BigInteger(endKey)).divide(new BigInteger("2")).toString();
-                    } else {
-                        int len = startKey.length() - endKey.length();
-                        for (int i = 0; i < len; i++) {
-                            endKey = endKey + "0";
-                        }
-                        midKey = new BigInteger(startKey).add(new BigInteger(endKey)).divide(new BigInteger("2")).toString();
-                    }
-                    for (int i = 0; i < prefix; i++) {
-                        midKey = "0" + midKey;
-                    }
-                    realInsert(regionInfos.get(ix).getStartKey(), midKey.getBytes());
-                    realInsert(midKey.getBytes(), regionInfos.get(ix).getEndKey());
-                } else {
-                    // 二者长度相等，正好
-                    midKey = new BigInteger(startKey).add(new BigInteger(endKey)).divide(new BigInteger("2")).toString();
-                    for (int i = 0; i < prefix; i++) {
-                        midKey = "0" + midKey;
-                    }
-                    realInsert(regionInfos.get(ix).getStartKey(), midKey.getBytes());
-                    realInsert(midKey.getBytes(), regionInfos.get(ix).getEndKey());
-                }
-            }
+//            String startKey = new String(regionInfos.get(index).getStartKey());
+//            String endKey = new String(regionInfos.get(index).getEndKey());
+//            if (startKey.length() == 0) {
+//                BigInteger midKeyBig = new BigInteger(endKey).divide(new BigInteger("2"));
+//                String midKey= midKeyBig.toString();
+//                for (int i = 0; i < endKey.length(); i++) {
+//                    if (endKey.charAt(i) == '0') {
+//                        midKey = '0' + midKey;
+//                    } else {
+//                        break;
+//                    }
+//                }
+//                realInsert(regionInfos.get(ix).getStartKey(), midKey.getBytes());
+//                realInsert(midKey.getBytes(), regionInfos.get(ix).getEndKey());
+//            } else if (endKey.length() == 0) {
+//                realInsert(regionInfos.get(index).getStartKey(), regionInfos.get(index).getEndKey());
+//            } else {
+//                int prefix = 0;
+//                if (startKey.charAt(0) == '0' && endKey.charAt(0) == '0') {
+//                    for (int i = 0; i < startKey.length(); i++) {
+//                        if (startKey.charAt(i) == '0' && endKey.charAt(0) == '0') {
+//                            prefix++;
+//                        } else {
+//                            break;
+//                        }
+//                    }
+//                }
+//                String midKey = "";
+//                if (startKey.length() != endKey.length()) {
+//                    if (startKey.length() < endKey.length()) {
+//                        int len = endKey.length() - startKey.length();
+//                        for (int i = 0; i < len; i++) {
+//                            startKey = startKey + "0";
+//                        }
+//                        midKey = new BigInteger(startKey).add(new BigInteger(endKey)).divide(new BigInteger("2")).toString();
+//                    } else {
+//                        int len = startKey.length() - endKey.length();
+//                        for (int i = 0; i < len; i++) {
+//                            endKey = endKey + "0";
+//                        }
+//                        midKey = new BigInteger(startKey).add(new BigInteger(endKey)).divide(new BigInteger("2")).toString();
+//                    }
+//                    for (int i = 0; i < prefix; i++) {
+//                        midKey = "0" + midKey;
+//                    }
+//                    realInsert(regionInfos.get(ix).getStartKey(), midKey.getBytes());
+//                    realInsert(midKey.getBytes(), regionInfos.get(ix).getEndKey());
+//                } else {
+//                    // 二者长度相等，正好
+//                    midKey = new BigInteger(startKey).add(new BigInteger(endKey)).divide(new BigInteger("2")).toString();
+//                    for (int i = 0; i < prefix; i++) {
+//                        midKey = "0" + midKey;
+//                    }
+//                    realInsert(regionInfos.get(ix).getStartKey(), midKey.getBytes());
+//                    realInsert(midKey.getBytes(), regionInfos.get(ix).getEndKey());
+//                }
+//            }
+            // 考虑到目前Region都比较小，可以直接读取了
+            realInsert(regionInfos.get(ix).getStartKey(), regionInfos.get(ix).getEndKey());
             long now = System.currentTimeMillis();
             System.out.println("Data inserting, elapsed: " + (now - start) + "ms");
         }
