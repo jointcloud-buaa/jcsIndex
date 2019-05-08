@@ -469,6 +469,14 @@ public class ContentInfo implements Serializable
 	     */
 		return this.data.size() >= 2 * this.order;
 	}
+
+	public int getTupleNum() {
+	    int ans = 0;
+	    for (Map.Entry<Integer, Vector<JcsTuple>> entry : jcsData.entrySet()) {
+	        ans += entry.getValue().size();
+        }
+        return ans;
+    }
 	
 	@Override
 	public String toString()

@@ -45,6 +45,7 @@ public class CmdServer implements Runnable {
         final String STORAGE_CMD = "storage";
         final String QUERY_CMD = "query";
         final String PQUERY_CMD = "pquery";
+        final String TUPLENUM_CMD = "tuplenum";
         final String TEST_CMD = "test";
 
         Scanner sc = new Scanner(System.in);
@@ -63,9 +64,9 @@ public class CmdServer implements Runnable {
                             String ip = args[1];
                             int port = Integer.parseInt(args[2]);
                             if (serverPeer.performJoinRequest(ip, port)) {
-                                System.out.println("连接成功");
+                                System.out.println("connect success");
                             } else {
-                                System.out.println("连接失败");
+                                System.out.println("connect fail");
                             }
                         } else {
                             System.out.println("FORMAT: join ip port");
@@ -89,7 +90,7 @@ public class CmdServer implements Runnable {
                             oos.writeObject(message);
 
                             socket.close();
-                            System.out.println("退出完成");
+                            System.out.println("exit complete");
                         } catch (Exception e) {
                             e.printStackTrace();
                             System.err.println("Unknown Host Exception");
@@ -118,7 +119,7 @@ public class CmdServer implements Runnable {
                             TreeNode treeNode = serverPeer.getListItem(0);
                             ContentInfo contentInfo = treeNode.getContent();
                             contentInfo.insertData(new IndexValue(IndexValue.STRING_TYPE, key, new IndexInfo(value)), ContentInfo.INSERT_NORMALLY);
-                            System.out.println("插入数据成功");
+                            System.out.println("insert data success");
                         } else {
                             System.out.println("FORMAT: test key value");
                         }
@@ -144,7 +145,7 @@ public class CmdServer implements Runnable {
                                 oos.writeObject(message);
 
                                 socket.close();
-                                System.out.println("插入数据完成");
+                                System.out.println("insert data complete");
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 System.err.println("Unknown Host Exception");
@@ -175,7 +176,7 @@ public class CmdServer implements Runnable {
                                 oos.writeObject(message);
 
                                 socket.close();
-                                System.out.println("插入数据完成");
+                                System.out.println("insert tuple complete");
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 System.err.println("Unknown Host Exception");
@@ -209,7 +210,7 @@ public class CmdServer implements Runnable {
                                 oos.writeObject(message);
 
                                 socket.close();
-                                System.out.println("查询输入完成");
+                                System.out.println("query input complete");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -243,15 +244,18 @@ public class CmdServer implements Runnable {
                                 oos.writeObject(message);
 
                                 socket.close();
-                                System.out.println("jcstuple查询输入完成");
+                                System.out.println("jcstuple query input complete");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else {
                             System.out.println("FORMAT: pquery timeIndex leftbound rightbound");
                         }
-                    }
-                    else if (args[0].equals(HELP_CMD)) {
+                    } else if (args[0].equals(TUPLENUM_CMD)) {
+                      // 获取存储的tuple数字
+                        TreeNode treeNode = serverPeer.getListItem(0);
+                        System.out.println(treeNode.getContent().getTupleNum());
+                    } else if (args[0].equals(HELP_CMD)) {
                         System.out.println(HELP_MSG);
                     } else {
                         System.out.println("UNKNOWN COMMANd");
