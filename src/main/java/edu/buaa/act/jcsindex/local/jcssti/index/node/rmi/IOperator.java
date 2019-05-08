@@ -25,6 +25,8 @@ public interface IOperator extends Remote {
      */
     List<ParaGPSRecord> rangeQuery(ParaRectangle rectangle, long startTime, long endTime) throws RemoteException;
 
+    List<ParaGPSRecord> rangeQuery(ParaRectangle rectangle, int timeIndex) throws RemoteException;
+
     /**
      * 以防万一，留下一个接口用来插入数据
      */

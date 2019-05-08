@@ -147,19 +147,68 @@ public class DataNodeImpl implements IDataNode {
     }
 
     @Override
-    public List<ParaGPSRecord> rangeQuery(ParaRectangle rectangle, long startTime, long endTime) {
-        // TODO：该部分存在魔数，后续需要修改
-        int start = (int )(startTime - Constants.STARTTIME) / 3600 % Constants.N;
-        int end = (int )(endTime - Constants.STARTTIME) / 3600 % Constants.N;
-        // TODO: 暂时固定
-        start = 32;
-        end = 33;
+    public List<ParaGPSRecord> rangeQuery(ParaRectangle rectangle, int timeIndex) {
         List<String> sub = new ArrayList<>();
         int x1 = gridInstance.getX(rectangle.minX);
         int y1 = gridInstance.getY(rectangle.minY);
         int x2 = gridInstance.getX(rectangle.maxX);
         int y2 = gridInstance.getY(rectangle.maxY);
-        System.out.println("HELLO SAM: " + rectangle.minX + " " + rectangle.minY + " " +  rectangle.maxX + " " + rectangle.maxY);
+        System.out.println("Search Rectangle: " + rectangle.minX + " " + rectangle.minY + " " +  rectangle.maxX + " " + rectangle.maxY + " clusterid: " + clusterID + " timeIndex: " + timeIndex);
+        try {
+            for (int i = x1; i < x2; i++) {
+                for (int j = y1; j < y2; j++) {
+                    int gridId = ZOrder.getZOrderStr(i, j);
+                    // if (indexSummary.contains(time, gridId)) continue;
+                    SearchResult sr = indexs[timeIndex].searchKey(gridId, true);
+                    if (sr.getValues() != null) {
+                        sub.addAll(sr.getValues());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        List<ParaGPSRecord> res = new ArrayList<>();
+        try {
+            HTableInterface hTable = pool.getTable(tableName);
+            List<Get> gets = new ArrayList<>();
+            for (int i = 0; i < sub.size(); i++) {
+                String rowkey = sub.get(i);
+                Get get = new Get(Bytes.toBytes(rowkey.trim()));
+                get.addColumn(Constants.GPSCF, Constants.GPSCF_LONGTITUDE);
+                get.addColumn(Constants.GPSCF, Constants.GPSCF_LATITUDE);
+                get.addColumn(Constants.GPSCF, Constants.GPSCF_DEVICESN);
+                get.addColumn(Constants.GPSCF, Constants.GPSCF_TIMESTAMP);
+                gets.add(get);
+            }
+            Result[] results = hTable.get(gets);
+            for (int i = 0; i < results.length; i++) {
+                ParaGPSRecord gpsRecord = new ParaGPSRecord();
+                gpsRecord.setLongitude((float )Bytes.toDouble(results[i].getValue(Constants.GPSCF, Constants.GPSCF_LONGTITUDE)));
+                gpsRecord.setLatitude((float )Bytes.toDouble(results[i].getValue(Constants.GPSCF, Constants.GPSCF_LATITUDE)));
+                gpsRecord.setDevicesn(Long.parseLong(Bytes.toString(results[i].getValue(Constants.GPSCF, Constants.GPSCF_DEVICESN))));
+                gpsRecord.setGpstime(Bytes.toLong(results[i].getValue(Constants.GPSCF, Constants.GPSCF_TIMESTAMP)));
+                gpsRecord.setClusterid(clusterID);
+                res.add(gpsRecord);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("Res size: " + res.size());
+        return res;
+    }
+
+    @Override
+    public List<ParaGPSRecord> rangeQuery(ParaRectangle rectangle, long startTime, long endTime) {
+        // TODO：该部分存在魔数，后续需要修改
+        int start = (int )(startTime - Constants.STARTTIME) / 3600 % Constants.N;
+        int end = (int )(endTime - Constants.STARTTIME) / 3600 % Constants.N;
+        List<String> sub = new ArrayList<>();
+        int x1 = gridInstance.getX(rectangle.minX);
+        int y1 = gridInstance.getY(rectangle.minY);
+        int x2 = gridInstance.getX(rectangle.maxX);
+        int y2 = gridInstance.getY(rectangle.maxY);
+        System.out.println("Search Rectangle: " + rectangle.minX + " " + rectangle.minY + " " +  rectangle.maxX + " " + rectangle.maxY + " clusterid: " + clusterID);
         for (int time = start; time < end; time++) {
             try {
                 for (int i = x1; i < x2; i++) {

@@ -42,6 +42,7 @@ public class ParaGPSRecord implements java.io.Externalizable {
         out.writeFloat(longitude);
         out.writeLong(gpstime);
         out.writeLong(devicesn);
+        out.writeInt(clusterid);
         out.flush();
     }
 
@@ -54,6 +55,7 @@ public class ParaGPSRecord implements java.io.Externalizable {
         this.longitude = in.readFloat();
         this.gpstime = in.readLong();
         this.devicesn = in.readLong();
+        this.clusterid = in.readInt();
     }
 
     public int getClusterid() {
@@ -118,7 +120,7 @@ public class ParaGPSRecord implements java.io.Externalizable {
         this.devicesn = devicesn;
     }
 
-    public String getRowKey() {
+    public String getRowiKey() {
         return rowKey;
     }
 

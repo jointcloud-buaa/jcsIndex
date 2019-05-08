@@ -68,6 +68,11 @@ public class DataNodeSkeleton extends UnicastRemoteObject implements IOperator, 
     }
 
     @Override
+    public List<ParaGPSRecord> rangeQuery(ParaRectangle rectangle, int timeIndex) {
+        return dataNode.rangeQuery(rectangle, timeIndex);
+    }
+
+    @Override
     public void insert() throws RemoteException{
         dataNode.insert();
     }

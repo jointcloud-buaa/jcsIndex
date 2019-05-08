@@ -71,6 +71,9 @@ public class CMDServer implements Runnable{
                         List<ParaGPSRecord> res = dataNode.rangeQuery(ind);
                         long end = System.currentTimeMillis();
                         System.out.println("查询时间为：" + (end - start) + ", 返回数据大小为: " + res.size());
+                        for (int i = 0; i < res.size(); i++) {
+                            System.out.println(res.get(i).getLongitude() + " " + res.get(i).getLatitude() + " " + res.get(i).getClusterid());
+                        }
                     } else if (args[0].equals(MEMORY_CMD)) {
                         Runtime runtime = Runtime.getRuntime();
                         long memoryUsed = runtime.totalMemory() - runtime.freeMemory();

@@ -1,6 +1,7 @@
 package bplus.bptree;
 
 import bplus.util.InvalidBTreeStateException;
+import edu.buaa.act.jcsindex.global.utils.Range;
 
 import java.io.File;
 import java.io.IOException;
@@ -2520,6 +2521,14 @@ public class BPlusTree {
         }
     }
 
+    public int getRootNodeSize() {
+        if (root == null) {
+            return -1;
+        } else {
+            return root.keyArray.size();
+        }
+    }
+
     public List<RangePosition> expandRange(TreeNode n, RangePosition rp, int ind) {
         if (n.isLeaf()) {
             // 叶子结点(最好不要拓展到叶子结点)
@@ -2530,9 +2539,13 @@ public class BPlusTree {
                 // 特殊情况，只能发布到这一层
                 RangePosition sub = new RangePosition(rp.level );
                 sub.indexs = rp.indexs;
-                sub.left = n.keyArray.getFirst();
-                sub.right = n.keyArray.getLast();
-                return Arrays.asList(new RangePosition[]{sub});
+                if (n.keyArray.isEmpty()) {
+                    return new ArrayList<>();
+                } else {
+                    sub.left = n.keyArray.getFirst();
+                    sub.right = n.keyArray.getLast();
+                    return Arrays.asList(new RangePosition[]{sub});
+                }
             }
         } else {
             // 中间结点

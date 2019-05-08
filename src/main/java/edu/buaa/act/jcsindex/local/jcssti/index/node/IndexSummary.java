@@ -12,6 +12,7 @@ import edu.buaa.act.jcsindex.global.protocol.body.SPPublishBody;
 
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -31,11 +32,13 @@ public class IndexSummary implements Runnable{
         this.indexs = indexs;
         this.ip = ip;
         this.queue = new LinkedBlockingQueue<>();
+        this.summary = new HashMap<>();
     }
 
     public void initialize() {
         // 初始化
         int count = 0;
+        int maxsize = 0;
         for (int i = 0; i < indexs.length; i++) {
             List<RangePosition> rps = indexs[i].expandRange(new RangePosition());
             TreeSet<RangePosition> treeSet = new TreeSet<>();
@@ -44,13 +47,13 @@ public class IndexSummary implements Runnable{
                 rp.max = indexs[i].getMaxRange(rp);
                 treeSet.add(rp);
                 realPublish(i, rp);
-                // System.out.println("(" + rp.left + ", " + rp.right + ") " + "(" + rp.min + ", " + rp.max + ")");
                 count++;
             }
             summary.put(i, treeSet);
-            System.out.println("Every timeIndex: " + rps.size());
+            maxsize = Math.max(indexs[i].getRootNodeSize(), maxsize);
+            System.out.println("Root node keyArray size: " + indexs[i].getRootNodeSize() + " Every timeIndex: " + rps.size());
         }
-        System.out.println("all count: " + count);
+        System.out.println("all count: " + count + " Max root node size: " + maxsize);
     }
 
     public void realPublish(int timeIndex, RangePosition rp) {

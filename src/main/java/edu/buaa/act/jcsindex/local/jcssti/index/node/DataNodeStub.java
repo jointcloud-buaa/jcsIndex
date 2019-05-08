@@ -52,6 +52,16 @@ public class DataNodeStub implements IDataNode {
     }
 
     @Override
+    public List<ParaGPSRecord> rangeQuery(ParaRectangle rectangle, int timeIndex) {
+        try {
+            return operator.rangeQuery(rectangle, timeIndex);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
     public List<ParaGPSRecord> rangeQuery(int time) {
         try {
             return operator.rangeQuery(time);

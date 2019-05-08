@@ -18,6 +18,8 @@ public interface IDataNode {
      */
     List<ParaGPSRecord> rangeQuery(ParaRectangle range, long startTime, long endTime);
 
+    List<ParaGPSRecord> rangeQuery(ParaRectangle rectangle, int timeIndex);
+
     /**
      * 该函数仅用于测试时使用
      * @param time
