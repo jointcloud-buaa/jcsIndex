@@ -39,7 +39,7 @@ public class RangePosition implements Comparable<RangePosition> {
 
     @Override
     public int compareTo(RangePosition that) {
-        return (int )(this.left - that.left);
+        return (int )(this.min - that.min);
     }
 
     public void increaseAll() {

@@ -42,7 +42,9 @@ public class CMDServer implements Runnable{
         final String QUIT_CMD = "quit";
         final String TEST_CMD = "test";
         final String RANGE_CMD = "range";
+        final String INIRANGE_CMD = "inirange";
         final String PUBLISH_CMD = "publish";
+        final String INIANDPUB_CMD = "iniandpub";
         final String MEMORY_CMD = "memory";
 
         Scanner sc = new Scanner(System.in);
@@ -70,7 +72,7 @@ public class CMDServer implements Runnable{
                         }
                         List<ParaGPSRecord> res = dataNode.rangeQuery(ind);
                         long end = System.currentTimeMillis();
-                        System.out.println("查询时间为：" + (end - start) + ", 返回数据大小为: " + res.size());
+                        System.out.println("Query time: " + (end - start) + ", Result size: " + res.size());
                         for (int i = 0; i < res.size(); i++) {
                             System.out.println(res.get(i).getLongitude() + " " + res.get(i).getLatitude() + " " + res.get(i).getClusterid());
                         }
@@ -82,11 +84,15 @@ public class CMDServer implements Runnable{
                                 memoryUsed / (1024 * 1024.0));
                     } else if (args[0].equals(RANGE_CMD)) {
                         // TODO: 待添加真正的逻辑
+                    } else if (args[0].equals(INIANDPUB_CMD)) {
+                        // 初始化并发布索引
+                        dataNode.initializeAndpublish();
+                    } else if (args[0].equals(INIRANGE_CMD)) {
+                        dataNode.initializeRange();
                     } else if (args[0].equals(PUBLISH_CMD)) {
                         dataNode.publishRange();
                     } else if (args[0].equals(QUIT_CMD)) {
                         dataNode.exit();
-//                        skeleton.exit();
                         isRunning = false;
                     } else if (args[0].equals(HELP_CMD)) {
                         System.out.println(HELP_MSG);

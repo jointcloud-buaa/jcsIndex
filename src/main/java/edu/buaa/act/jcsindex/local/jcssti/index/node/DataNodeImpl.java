@@ -158,7 +158,7 @@ public class DataNodeImpl implements IDataNode {
             for (int i = x1; i < x2; i++) {
                 for (int j = y1; j < y2; j++) {
                     int gridId = ZOrder.getZOrderStr(i, j);
-                    // if (indexSummary.contains(time, gridId)) continue;
+                    if (!indexSummary.contains(timeIndex, gridId)) continue;
                     SearchResult sr = indexs[timeIndex].searchKey(gridId, true);
                     if (sr.getValues() != null) {
                         sub.addAll(sr.getValues());
@@ -214,7 +214,7 @@ public class DataNodeImpl implements IDataNode {
                 for (int i = x1; i < x2; i++) {
                     for (int j = y1; j < y2; j++) {
                         int gridId = ZOrder.getZOrderStr(i, j);
-                        // if (indexSummary.contains(time, gridId)) continue;
+                        if (!indexSummary.contains(time, gridId)) continue;
                         SearchResult sr = indexs[time].searchKey(gridId, true);
                         if (sr.getValues() != null) {
                             sub.addAll(sr.getValues());
@@ -256,12 +256,12 @@ public class DataNodeImpl implements IDataNode {
 
     /**
      * 该函数仅用于测试时使用
-     * @param time
+     * @param timeIndex
      * @return
      */
     @Override
-    public List<ParaGPSRecord> rangeQuery(int time) {
-        if (time < 0 || time > indexs.length) {
+    public List<ParaGPSRecord> rangeQuery(int timeIndex) {
+        if (timeIndex < 0 || timeIndex > indexs.length) {
             // TODO：Invalid args, Just return null
             return null;
         }
@@ -274,7 +274,8 @@ public class DataNodeImpl implements IDataNode {
             for (int i = x1; i < x2; i++) {
                 for (int j = y1; j < y2; j++) {
                     int gridId = ZOrder.getZOrderStr(i, j);
-                    SearchResult sr = indexs[time].searchKey(gridId, true);
+                    if (!indexSummary.contains(timeIndex, gridId)) continue;
+                    SearchResult sr = indexs[timeIndex].searchKey(gridId, true);
                     if (sr.getValues() != null) {
                         if (sr.getValues().size() > 1) {
                             System.out.println(sr.getValues().size());
@@ -286,7 +287,7 @@ public class DataNodeImpl implements IDataNode {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("待查点的大小为: " + sub.size());
+        System.out.println("HBase Query Size: " + sub.size());
         List<ParaGPSRecord> res = new ArrayList<>();
         try {
             HTableInterface hTable = pool.getTable(tableName);
@@ -318,8 +319,26 @@ public class DataNodeImpl implements IDataNode {
 
     @Override
     public void publishRange() {
-        // 初始化
+        // 发布索引摘要
+        System.out.println("start to publish index summary");
+        indexSummary.publishRange();
+        System.out.println("end to publish index summary");
+    }
+
+    public void initializeRange() {
+        long current = System.currentTimeMillis();
+        System.out.println("start to initialize index summary");
         indexSummary.initialize();
+        long end = System.currentTimeMillis();
+        System.out.println("end to initialize index summary, elapsed: " + (end - current));
+    }
+
+    public void initializeAndpublish() {
+        long current = System.currentTimeMillis();
+        System.out.println("start to initialize and publish");
+        indexSummary.initializeAndpublish();
+        long end = System.currentTimeMillis();
+        System.out.println("end to initialize and publish, elapsed: " + (end - current));
     }
 
     /**

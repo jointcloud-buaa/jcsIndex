@@ -2511,14 +2511,21 @@ public class BPlusTree {
         }
     }
 
-    public List<RangePosition> expandRange(RangePosition rp) {
-        if (rp.level == -1) {
+    public List<RangePosition> expandRange(RangePosition rp, int type) {
+        if (type == -1) {
             RangePosition sub = new RangePosition(0);
             sub.left = 0L; sub.right = 1047615;
             return Arrays.asList(new RangePosition[]{sub});
         } else {
             return expandRange(root, rp, 0);
         }
+//        if (rp.level == -1) {
+//            RangePosition sub = new RangePosition(0);
+//            sub.left = 0L; sub.right = 1047615;
+//            return Arrays.asList(new RangePosition[]{sub});
+//        } else {
+//            return expandRange(root, rp, 0);
+//        }
     }
 
     public int getRootNodeSize() {
