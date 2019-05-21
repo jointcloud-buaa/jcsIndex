@@ -32,8 +32,10 @@ public class MainInstance {
             int type = Integer.parseInt(args[1]);
             String serverName = args[2];
             String ip = args[3];
+            int port = Integer.parseInt(args[4]);
+            int gport = Integer.parseInt(args[5]);
             try {
-                new LocalInstance().start(type, serverName, ip);
+                new LocalInstance().start(type, serverName, ip, port, gport);
             } catch (Exception e) {
                 e.printStackTrace();
             }

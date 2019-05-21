@@ -42,6 +42,9 @@ public class DataNodeImpl implements IDataNode {
     // 本节点的IP地址
     private final String ip;
 
+    // global index的通信端口
+    private final int gport;
+
     // 本集群的id
     private final int clusterID;
 
@@ -72,11 +75,12 @@ public class DataNodeImpl implements IDataNode {
     // HBase线程池
     private HConnection pool;
 
-    public DataNodeImpl(Configuration conf, int poolSize, String tableName, String serverName, String ip, int clusterID, Grid gridInstance, String dbPath, int N) {
+    public DataNodeImpl(Configuration conf, int poolSize, String tableName, String serverName, String ip, int gport, int clusterID, Grid gridInstance, String dbPath, int N) {
         this.conf = conf;
         this.tableName = tableName;
         this.serverName = serverName;
         this.ip = ip;
+        this.gport = gport;
         this.clusterID = clusterID;
         this.regionInfos = new ArrayList<>();
         this.gridInstance = gridInstance;
@@ -140,7 +144,7 @@ public class DataNodeImpl implements IDataNode {
                 // TODO: 后缀是bin,改成db更合适
                 indexs[i] = new BPlusTree(bconf, recreateTree ? "rw+" : "rw", dbPath + "/" + "tree" + i + ".bin", bPerf);
             }
-            indexSummary = new IndexSummary(indexs, ip);
+            indexSummary = new IndexSummary(indexs, ip, gport);
         } catch (Exception e) {
             throw new RuntimeException("索引初始化失败", e);
         }

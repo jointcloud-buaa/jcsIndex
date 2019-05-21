@@ -24,15 +24,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class IndexSummary implements Runnable{
     private BPlusTree[] indexs;
     private String ip;
+    private int port;
     private Map<Integer, TreeSet<RangePosition>> summary;
     private LinkedBlockingQueue<RangePosition> queue;
     private volatile boolean isRunning = true;
     private boolean isInitialize = false;
-    private boolean isExpand = false;
+    private boolean isExpand = true;
 
-    public IndexSummary(BPlusTree[] indexs, String ip) {
+    public IndexSummary(BPlusTree[] indexs, String ip, int port) {
         this.indexs = indexs;
         this.ip = ip;
+        this.port = port;
         this.queue = new LinkedBlockingQueue<>();
         this.summary = new HashMap<>();
     }
@@ -51,13 +53,22 @@ public class IndexSummary implements Runnable{
             List<RangePosition> rps = indexs[i].expandRange(new RangePosition(), 0);
             TreeSet<RangePosition> treeSet = new TreeSet<>();
             for (RangePosition rp : rps) {
-                if (isExpand && i < 744) {
+                // 发布第三个月的第一个星期
+                // [1440, 1440 + 168]
+                if (isExpand && i >= 1440 && i < 1440 + 168) {
                     List<RangePosition> rps1 = indexs[i].expandRange(rp, 0);
-                    for (RangePosition rp2 : rps1) {
-                        rp2.min = indexs[i].getMinRange(rp2);
-                        rp2.max = indexs[i].getMaxRange(rp2);
-                        treeSet.add(rp2);
+                    for (RangePosition rp1 : rps1) {
+                        rp1.min = indexs[i].getMinRange(rp1);
+                        rp1.max = indexs[i].getMaxRange(rp1);
+                        treeSet.add(rp1);
                         count++;
+//                        List<RangePosition> rps2 = indexs[i].expandRange(rp1, 0);
+//                        for (RangePosition rp2 : rps2) {
+//                            rp2.min = indexs[i].getMinRange(rp2);
+//                            rp2.max = indexs[i].getMaxRange(rp2);
+//                            treeSet.add(rp2);
+//                            count++;
+//                        }
                     }
                 } else {
                     rp.min = indexs[i].getMinRange(rp);
@@ -91,14 +102,17 @@ public class IndexSummary implements Runnable{
             List<RangePosition> rps = indexs[i].expandRange(new RangePosition(), 0);
             TreeSet<RangePosition> treeSet = new TreeSet<>();
             for (RangePosition rp : rps) {
-                if (isExpand && i < 744) {
+                if (isExpand && i >= 1440 && i < 1440 +168) {
                     List<RangePosition> rps1 = indexs[i].expandRange(rp, 0);
-                    for (RangePosition rp2 : rps1) {
-                        rp2.min = indexs[i].getMinRange(rp2);
-                        rp2.max = indexs[i].getMaxRange(rp2);
-                        treeSet.add(rp2);
-                        realPublish(i, rp2);
-                        count++;
+                    for (RangePosition rp1 : rps1) {
+                        List<RangePosition> rps2 = indexs[i].expandRange(rp1, 0);
+                        for (RangePosition rp2 : rps2) {
+                            rp2.min = indexs[i].getMinRange(rp2);
+                            rp2.max = indexs[i].getMaxRange(rp2);
+                            treeSet.add(rp2);
+                            realPublish(i, rp2);
+                            count++;
+                        }
                     }
                 } else {
                     rp.min = indexs[i].getMinRange(rp);
@@ -131,13 +145,13 @@ public class IndexSummary implements Runnable{
 
     public void realPublish(int timeIndex, RangePosition rp) {
         try {
-            Socket socket = new Socket("127.0.0.1", 40000);
+            Socket socket = new Socket("127.0.0.1", port);
 
             Head head = new Head();
             head.setMsgType(MsgType.SP_PUBLISH.getValue());
 
             Body body = new SPPublishBody(
-                    new PhysicalInfo(ip, 40000),
+                    new PhysicalInfo(ip, port),
                     null,
                     new JcsTuple(timeIndex, rp.min, rp.max, ip),
                     null

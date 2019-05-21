@@ -16,7 +16,7 @@ import java.net.UnknownHostException;
  * Created by shimin at 2018/7/6 0:59
  **/
 public class LocalInstance {
-    public void start(int type, String serverName, String ip) throws Exception {
+    public void start(int type, String serverName, String ip, int port, int gport) throws Exception {
         // 获取Configuration
         Configuration conf = getConfiguration(type);
 
@@ -37,11 +37,11 @@ public class LocalInstance {
         int N = Constants.N;
 
         // 初始化DataNodeImpl
-        DataNodeImpl dataNode = new DataNodeImpl(conf, poolSize, tableName, serverName, ip, type, gridInstance, dbPath, N);
+        DataNodeImpl dataNode = new DataNodeImpl(conf, poolSize, tableName, serverName, ip, gport, type, gridInstance, dbPath, N);
 
 
         // 初始化Sketlon线程并启动
-        DataNodeSkeleton skeleton = new DataNodeSkeleton(dataNode, ip, Constants.NODE_PORT);
+        DataNodeSkeleton skeleton = new DataNodeSkeleton(dataNode, ip, port);
         new Thread(skeleton).start();
 
         // 初始化CMDServer线程并启动
@@ -49,7 +49,7 @@ public class LocalInstance {
     }
 
     public static void main(String[] args) throws Exception{
-        new LocalInstance().start(1, "test55", "127.0.0.1");
+        new LocalInstance().start(1, "test55", "127.0.0.1", 9090, 40000);
 //        BigInteger l = new BigInteger("0");
 //        BigInteger r = new BigInteger("0286319677901368209223372035402814804");
 //        BigInteger ans = l.add(r);
