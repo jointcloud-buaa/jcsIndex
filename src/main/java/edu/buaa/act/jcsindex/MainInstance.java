@@ -22,7 +22,7 @@ public class MainInstance {
             // 启动GlobalIndex
             System.out.println("start global index");
             // TODO: 默认端口为40000，没有必要修改
-            int port = 40000;
+            int port = Integer.parseInt(args[1]);
             ServerInstance serverInstance = new ServerInstance(port);
             serverInstance.startService(port);
             new Thread(new BroadcastServer(serverInstance.peer())).start();

@@ -21,7 +21,7 @@ public class BroadcastServer implements Runnable{
     private static Logger log = Logger.getLogger(BroadcastServer.class);
 
     // TODO: 固定端口号，可以考虑修改为从配置中获取
-    private int port = 50051;
+    private int port = 50052;
 
     private Server server;
 

@@ -20,7 +20,7 @@ public class BroadcastClient {
     private final BroadcastSearchGrpc.BroadcastSearchBlockingStub blockingStub;
 
     public BroadcastClient(String host) {
-        this(ManagedChannelBuilder.forAddress(host, 50051)
+        this(ManagedChannelBuilder.forAddress(host, 50052)
                 .usePlaintext()
                 .build());
     }
