@@ -215,7 +215,6 @@ public class SPParallelSearchListener extends ActionAdapter {
     {
         if (msg.getHead().getMsgType() == MsgType.SP_PARALLEL_SEARCH.getValue()) {
             // TODO: JUST FOR TEST
-            System.out.println("***SP_PARALLEL_SEARCH");
             return true;
         }
         return false;

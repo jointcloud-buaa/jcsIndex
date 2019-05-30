@@ -58,7 +58,6 @@ public class SPUpdateTagListener extends ActionAdapter{
     {
         if (msg.getHead().getMsgType() == MsgType.SP_UPDATE_TAG.getValue()) {
             // TODO: JUST FOR TEST
-            System.out.println("***SP_UPDATE_TAG");
             return true;
         }
         return false;

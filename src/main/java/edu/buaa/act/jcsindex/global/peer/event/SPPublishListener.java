@@ -271,7 +271,6 @@ public class SPPublishListener extends ActionAdapter
     {
         if (msg.getHead().getMsgType() == MsgType.SP_PUBLISH.getValue()) {
             // TODO: JUST FOR TEST
-            System.out.println("***SP_PUBLISH");
             return true;
         }
         return false;

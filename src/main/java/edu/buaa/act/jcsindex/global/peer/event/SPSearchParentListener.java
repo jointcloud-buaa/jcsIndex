@@ -89,7 +89,6 @@ public class SPSearchParentListener extends ActionAdapter {
     {
         if (msg.getHead().getMsgType() == MsgType.SP_SEARCH_PARENT.getValue()) {
             // TODO: JUST FOR TEST
-            System.out.println("***SP_SEARCH_PARENT");
             return true;
         }
         return false;

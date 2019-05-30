@@ -89,7 +89,6 @@ public class SPFindParentListener extends ActionAdapter {
     {
         if (msg.getHead().getMsgType() == MsgType.SP_FIND_PARENT.getValue()) {
             // TODO: JUST FOR TEST
-            System.out.println("***SP_FIND_PARENT");
             return true;
         }
         return false;

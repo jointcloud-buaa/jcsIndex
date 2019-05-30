@@ -77,7 +77,6 @@ public class SPPublishParentListener extends ActionAdapter{
     {
         if (msg.getHead().getMsgType() == MsgType.SP_PUBLISH_PARENT.getValue()) {
             // TODO: JUST FOR TEST
-            System.out.println("***SP_PUBLISH_PARENT");
             return true;
         }
         return false;

@@ -63,7 +63,6 @@ public class SPUpdateSubtreeRangeListener extends ActionAdapter{
     {
         if (msg.getHead().getMsgType() == MsgType.SP_UPDATE_SUBTREE_RANGE.getValue()) {
             // TODO: JUST FOR TEST
-            System.out.println("***SP_UPDATE_SUBTREE_RANGE");
             return true;
         }
         return false;
